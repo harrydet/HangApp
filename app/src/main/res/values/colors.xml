@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="white">#FFFFFF</color>
+    <color name="yellow">#E5B730</color>
+    <color name="yellowDark">#EE9912</color>
+    <color name="colorPrimary">#00AF98</color>
+    <color name="colorSecondary">#00463c</color>
+    <color name="pink">#F33446</color>
+    <color name="iceGrey">#F8F8F8</color>
+    <color name="coolGrey">#6D6E76</color>
+    <color name="coolGreyLight">#94959A</color>
+    <color name="limeGreen">#88C425</color>
+</resources>

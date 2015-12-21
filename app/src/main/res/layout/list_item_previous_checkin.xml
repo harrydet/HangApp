@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    android:layout_width="fill_parent"
+    android:layout_height="80dp"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:padding="10dp">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="30dp"
+        android:id="@+id/previous_venue_name"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentLeft="true"
+        android:text="@string/previous_venue_placeholder_string"
+        android:textSize="18sp"
+        android:textColor="@color/pink"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/previous_venue_with"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentLeft="true"
+        android:text="@string/previous_venue_with_placeholder_string"
+        android:textSize="16sp"
+        android:paddingLeft="20dp"/>
+
+    <de.hdodenhof.circleimageview.CircleImageView
+        android:id="@+id/previous_venue_photo"
+        android:layout_width="70dp"
+        android:layout_height="70dp"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentBottom="true"
+        android:src="@drawable/grey_placeholder"
+
+        />
+</RelativeLayout>

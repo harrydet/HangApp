@@ -1,0 +1,17 @@
+<resources>>
+    <style name="AppTheme.NoActionBar">
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+        <item name="android:windowDrawsSystemBarBackgrounds">true</item>
+        <item name="android:statusBarColor">@color/colorSecondary</item>
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimaryDark">@color/colorSecondary</item>
+    </style>
+
+    <style name="ratingBarStyling" parent="@android:style/Widget.RatingBar">
+        <item name="android:progressDrawable">@drawable/star_rating_bar</item>
+        <item name="android:indeterminateDrawable">@drawable/star_rating_bar</item>
+        <item name="android:minHeight">25dip</item>
+        <item name="android:maxHeight">27dip</item>
+    </style>
+</resources>

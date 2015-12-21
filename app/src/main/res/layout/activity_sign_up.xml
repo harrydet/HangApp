@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:background="@mipmap/background"
+    android:weightSum="1">
+
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="0dp"
+        android:layout_weight="0.2"
+        android:orientation="vertical">
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/logo_image"
+            android:layout_gravity="center_horizontal"
+            android:src="@mipmap/logo" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="0dp"
+        android:layout_weight="0.8"
+        android:orientation="vertical"
+        android:padding="20dp">
+
+        <EditText
+            android:layout_width="fill_parent"
+            android:layout_height="50dp"
+            android:paddingLeft="10dp"
+            android:paddingRight="10dp"
+            android:layout_marginLeft="40dp"
+            android:layout_marginRight="40dp"
+            android:layout_marginTop="5dp"
+            android:layout_marginBottom="5dp"
+            android:background="@color/white"
+            android:id="@+id/signup_email_field"
+            android:inputType="textEmailAddress"
+            android:hint="@string/email_hint"
+            android:textColorHint="@color/coolGreyLight"
+            android:drawableRight="@drawable/ic_mail_black_24dp"
+            android:textColor="@color/coolGrey"
+            android:textStyle="bold"
+            />
+
+        <EditText
+            android:layout_width="fill_parent"
+            android:layout_height="50dp"
+            android:paddingLeft="10dp"
+            android:paddingRight="10dp"
+            android:layout_marginLeft="40dp"
+            android:layout_marginRight="40dp"
+            android:layout_marginTop="5dp"
+            android:layout_marginBottom="5dp"
+            android:background="@color/white"
+            android:id="@+id/signup_full_name_field"
+            android:inputType="textPersonName"
+            android:hint="@string/full_name_hint"
+            android:textColorHint="@color/coolGreyLight"
+            android:drawableRight="@drawable/ic_person_black_24dp"
+            android:textColor="@color/coolGrey"
+            android:textStyle="bold"/>
+
+        <EditText
+            android:layout_width="fill_parent"
+            android:layout_height="50dp"
+            android:paddingLeft="10dp"
+            android:paddingRight="10dp"
+            android:layout_marginLeft="40dp"
+            android:layout_marginRight="40dp"
+            android:layout_marginTop="5dp"
+            android:layout_marginBottom="5dp"
+            android:background="@color/white"
+            android:id="@+id/signup_password_field"
+            android:inputType="textPassword"
+            android:hint="@string/password_hint"
+            android:textColorHint="@color/coolGreyLight"
+            android:drawableRight="@drawable/ic_lock_black_24dp"
+            android:textColor="@color/coolGrey"
+            android:textStyle="bold"/>
+
+        <EditText
+            android:layout_width="fill_parent"
+            android:layout_height="50dp"
+            android:paddingLeft="10dp"
+            android:layout_marginLeft="40dp"
+            android:layout_marginRight="40dp"
+            android:layout_marginTop="5dp"
+            android:layout_marginBottom="5dp"
+            android:background="@color/white"
+            android:id="@+id/signup_confirm_password_field"
+            android:inputType="textPassword"
+            android:hint="@string/confirm_password_hint"
+            android:textColorHint="@color/coolGreyLight"
+            android:textColor="@color/coolGrey"
+            android:textStyle="bold"/>
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/sign_up_form_button"
+            android:background="@drawable/signup_button_background"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="20dp"/>
+
+    </LinearLayout>
+
+</LinearLayout>

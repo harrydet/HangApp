@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <EditText
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/edit"
+        android:singleLine="true"
+        android:maxLines="1"
+        android:gravity="center_vertical"
+        android:hint="@string/area_edit_hint"
+        android:ellipsize="start"
+        android:background="@color/iceGrey"
+        android:paddingRight="50dp"
+        android:paddingLeft="10dp"/>
+    <ProgressBar
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/progress_spinner"
+        style="?android:attr/progressBarStyleSmall"
+        android:layout_marginRight="20dp"
+        android:layout_alignTop="@id/edit"
+        android:layout_alignBottom="@id/edit"
+        android:layout_alignRight="@id/edit"
+        android:visibility="invisible"
+        />
+
+</RelativeLayout>
