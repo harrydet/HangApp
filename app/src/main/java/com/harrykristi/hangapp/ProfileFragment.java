@@ -59,7 +59,7 @@ public class ProfileFragment extends Fragment {
     private String mParam2;
     private static final String TAG = ProfileFragment.class.getSimpleName();
     private static final int CAMERA_CAPTURE_IMAGE_REQUEST_CODE = 100;
-    private static final int CAMERA_CAPTURE_VIDEO_REQUEST_CODE = 200;
+    private static final int GALLERY_IMAGE_REQUEST_CODE = 200;
 
     private static final int MY_PERMISSIONS_REQUEST_CAMERA = 0;
     private static final int MY_PERMISSIONS_REQUEST_READ_EXTERNAL = 1;
@@ -252,13 +252,13 @@ public class ProfileFragment extends Fragment {
                 .setOnItemClickListener(new OnItemClickListener() {
                     @Override
                     public void onItemClick(DialogPlus dialog, Object item, View view, int position) {
-                        switch (position){
+                        switch (position) {
                             case 0:
                                 launchCameraIntent();
                                 dialog.dismiss();
                                 break;
                             case 1:
-                                //launchGalleryIntent();
+                                launchGalleryIntent();
                                 dialog.dismiss();
                                 break;
                             default:
@@ -268,6 +268,15 @@ public class ProfileFragment extends Fragment {
                 })
                 .create();
         dialog.show();
+    }
+
+    private void launchGalleryIntent() {
+        Intent intent = new Intent();
+        // Show only images, no videos or anything else
+        intent.setType("image/*");
+        intent.setAction(Intent.ACTION_GET_CONTENT);
+        // Always show the chooser (if there are multiple options available)
+        startActivityForResult(Intent.createChooser(intent, "Select Picture"), GALLERY_IMAGE_REQUEST_CODE);
     }
 
     private void launchCameraIntent(){
@@ -345,11 +354,31 @@ public class ProfileFragment extends Fragment {
                         .show();
             }
 
+        } else if(requestCode == GALLERY_IMAGE_REQUEST_CODE){
+            if (resultCode == Activity.RESULT_OK) {
+
+                fileUri = data.getData();
+                launchUploadProcess(false);
+
+
+            } else if (resultCode == Activity.RESULT_CANCELED) {
+
+                // user cancelled Image capture
+                Toast.makeText(getContext(),
+                        "User cancelled image picking", Toast.LENGTH_SHORT)
+                        .show();
+
+            } else {
+                // failed to capture image
+                Toast.makeText(getContext(),
+                        "Sorry! Failed to obtain image", Toast.LENGTH_SHORT)
+                        .show();
+            }
         }
     }
 
-    private void launchUploadProcess(boolean isImage) {
-        new UploadFileToServer(getContext(), fileUri.getPath(), ParseUser.getCurrentUser().getObjectId()).execute();
+    private void launchUploadProcess(boolean isCamera) {
+        new UploadFileToServer(getContext(), fileUri, ParseUser.getCurrentUser().getObjectId(), !isCamera).execute();
         mProfilePicture.setAlpha(0.5f);
     }
 
