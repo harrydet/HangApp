@@ -3,12 +3,16 @@ package com.harrykristi.hangapp;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
+import android.preference.PreferenceManager;
 import android.provider.MediaStore;
+import android.support.design.widget.NavigationView;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
@@ -24,9 +28,13 @@ import android.widget.Toast;
 
 import com.harrykristi.hangapp.Adapters.ProfileDialogAdapter;
 import com.harrykristi.hangapp.Adapters.ProfileListAdapter;
+import com.harrykristi.hangapp.Interfaces.AuthenticatedActivityCallbacks;
+import com.harrykristi.hangapp.Models.UserProfileResponse;
 import com.harrykristi.hangapp.Models.VenueHangApp;
 import com.harrykristi.hangapp.events.DataLoadedPreviousMatchesEvent;
+import com.harrykristi.hangapp.events.DataLoadedUserEvent;
 import com.harrykristi.hangapp.events.GeneralInfoEvent;
+import com.harrykristi.hangapp.events.GetUserPictureEvent;
 import com.harrykristi.hangapp.events.LoadPreviousMatchesEvent;
 import com.harrykristi.hangapp.helpers.BusProvider;
 import com.harrykristi.hangapp.Models.User;
@@ -89,6 +97,9 @@ public class ProfileFragment extends Fragment {
     private Bus mBus;
     private int mAnimationDuration;
 
+    private AuthenticatedActivityCallbacks callbacks;
+    private Activity mActivity;
+
     public static ProfileFragment newInstance(String param1, String param2) {
         ProfileFragment fragment = new ProfileFragment();
         Bundle args = new Bundle();
@@ -144,6 +155,15 @@ public class ProfileFragment extends Fragment {
                 startCameraWithPermissionCheck();
             }
         });
+
+        SharedPreferences myPrefs = mActivity.getSharedPreferences("myPrefs", Context.MODE_PRIVATE);
+        String url = myPrefs.getString("profile_picture_url","");
+        if(url.equals("")){
+            getBus().post(new GetUserPictureEvent(ParseUser.getCurrentUser().getObjectId()));
+        } else {
+            Picasso.with(getContext()).load(url).placeholder(R.drawable.default_profile_icon).noFade().into(mProfilePicture);
+        }
+
         return view;
     }
 
@@ -166,7 +186,7 @@ public class ProfileFragment extends Fragment {
     }
 
     @Override
-    public void onAttach(Activity activity) {
+    public void onAttach(Context activity) {
         super.onAttach(activity);
         try {
             mListener = (OnFragmentInteractionListener) activity;
@@ -174,6 +194,15 @@ public class ProfileFragment extends Fragment {
             throw new ClassCastException(activity.toString()
                     + " must implement OnFragmentInteractionListener");
         }
+
+        try {
+            callbacks = (AuthenticatedActivityCallbacks) activity;
+        } catch (ClassCastException e) {
+            throw new ClassCastException(activity.toString()
+                    + " must implement AuthenticatedActivityCallbacks");
+        }
+
+        mActivity = getActivity();
     }
 
     @Override
@@ -216,11 +245,11 @@ public class ProfileFragment extends Fragment {
     }
 
     protected void startCameraWithPermissionCheck() {
-        int permissionCheckCamera = ContextCompat.checkSelfPermission(getActivity(),
+        int permissionCheckCamera = ContextCompat.checkSelfPermission(mActivity,
                 Manifest.permission.CAMERA);
-        int permissionCheckRead = ContextCompat.checkSelfPermission(getActivity(),
+        int permissionCheckRead = ContextCompat.checkSelfPermission(mActivity,
                 Manifest.permission.READ_EXTERNAL_STORAGE);
-        int permissionCheckWrite = ContextCompat.checkSelfPermission(getActivity(),
+        int permissionCheckWrite = ContextCompat.checkSelfPermission(mActivity,
                 Manifest.permission.WRITE_EXTERNAL_STORAGE);
 
         if (permissionCheckCamera != PackageManager.PERMISSION_GRANTED
@@ -388,7 +417,7 @@ public class ProfileFragment extends Fragment {
                 if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                     getImage();
                 } else {
-                    Toast.makeText(getActivity(), "Permissions denied :(", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(mActivity, "Permissions denied :(", Toast.LENGTH_SHORT).show();
                 }
             }
         }
@@ -397,19 +426,28 @@ public class ProfileFragment extends Fragment {
     @Subscribe
     public void onImageUpload(final GeneralInfoEvent event) {
         if (!event.isError()) {
-            Picasso.with(getContext()).load(fileUri).placeholder(R.drawable.grey_placeholder).noFade().into(mProfilePicture);
+            Picasso.with(getContext()).load(fileUri).placeholder(R.drawable.default_profile_icon).noFade().into(mProfilePicture);
             mProfilePicture.setAlpha(1.0f);
 
-            final Snackbar snackbar = Snackbar.make(getView(), event.getMessage(), Snackbar.LENGTH_SHORT);
-            snackbar.setAction("OK", new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    snackbar.dismiss();
-                }
-            });
+            callbacks.OnImageUpdated(fileUri.toString());
+            SharedPreferences myPrefs = mActivity.getSharedPreferences("myPrefs", Context.MODE_PRIVATE);
+            SharedPreferences.Editor editor = myPrefs.edit();
+            editor.putString("profile_picture_url", fileUri.toString());
+            editor.commit();
 
-            snackbar.setActionTextColor(ContextCompat.getColor(getContext(), R.color.limeGreen));
-            snackbar.show();
+            View tmpView = getView();
+            if(tmpView != null){
+                final Snackbar snackbar = Snackbar.make(getView(), event.getMessage(), Snackbar.LENGTH_SHORT);
+                snackbar.setAction("OK", new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        snackbar.dismiss();
+                    }
+                });
+
+                snackbar.setActionTextColor(ContextCompat.getColor(getContext(), R.color.limeGreen));
+                snackbar.show();
+            }
         } else {
             mProfilePicture.setAlpha(1.0f);
 
@@ -421,6 +459,24 @@ public class ProfileFragment extends Fragment {
                 }
             });
         }
+    }
+
+    @Subscribe
+    public void onDataLoaded(DataLoadedUserEvent event) {
+        UserProfileResponse response = event.getResponse();
+        int status = event.getStatus();
+        if (response.isError()) {
+            if (status != 404) {
+                Toast.makeText(getContext(), "Something went wrong while getting the profile picture" +
+                        response.getMessage(), Toast.LENGTH_SHORT).show();
+            }
+        } else {
+            String url = response.getProfilePictureUrl();
+            Picasso.with(getContext()).setIndicatorsEnabled(true);
+            Picasso.with(getContext()).setLoggingEnabled(true);
+            Picasso.with(getContext()).load(url).placeholder(R.drawable.default_profile_icon).noFade().into(mProfilePicture);
+        }
+
     }
 
 }

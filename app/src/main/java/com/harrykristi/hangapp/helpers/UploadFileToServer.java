@@ -167,7 +167,7 @@ public class UploadFileToServer extends AsyncTask<Void, Integer, String> {
         Log.e(TAG, "Response from server: " + result);
 
         // showing the server response in an alert dialog
-        showAlert(result);
+        //showAlert(result);
 
         mBus.post(new GeneralInfoEvent(false, "Image uploaded successfully"));
 

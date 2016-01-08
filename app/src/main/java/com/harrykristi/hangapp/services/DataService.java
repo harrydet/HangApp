@@ -1,10 +1,14 @@
 package com.harrykristi.hangapp.services;
 
+import android.widget.Toast;
+
 import com.harrykristi.hangapp.Interfaces.HangAppAPI;
 import com.harrykristi.hangapp.Models.UserProfileResponse;
 import com.harrykristi.hangapp.events.ApiErrorEvent;
 import com.harrykristi.hangapp.events.DataLoadedPreviousMatchesEvent;
+import com.harrykristi.hangapp.events.DataLoadedUserEvent;
 import com.harrykristi.hangapp.events.DataLoadedVenueEvent;
+import com.harrykristi.hangapp.events.GetUserPictureEvent;
 import com.harrykristi.hangapp.events.LoadPreviousMatchesEvent;
 import com.harrykristi.hangapp.events.LoadVenuesEvent;
 import com.harrykristi.hangapp.Interfaces.FoursquareAPI;
@@ -98,6 +102,25 @@ public class DataService {
                     @Override
                     public void failure(RetrofitError error) {
 
+                    }
+                });
+    }
+
+    @Subscribe
+    public void onLoadData(final GetUserPictureEvent event){
+        String objectId = event.getObjectId();
+
+        mHangAppApi.fetchUserWithParams(objectId,
+                true,
+                new Callback<UserProfileResponse>() {
+                    @Override
+                    public void success(UserProfileResponse userProfileResponse, Response response) {
+                        mBus.post(new DataLoadedUserEvent(userProfileResponse, response.getStatus()));
+                    }
+
+                    @Override
+                    public void failure(RetrofitError error) {
+                        int i = 0;
                     }
                 });
     }

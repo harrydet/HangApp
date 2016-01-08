@@ -19,6 +19,7 @@ public class HelperActivity extends AppCompatActivity {
         } else {
             startingActivity = new Intent(this, LoginActivity.class);
         }
+        finish();
         startActivity(startingActivity);
     }
 }
