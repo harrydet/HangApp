@@ -25,7 +25,8 @@
             android:layout_marginTop="20dp"
             android:numStars="5"
             android:stepSize="0.5"
-            android:rating="2"/>
+            android:rating="2"
+            android:transitionName="@string/rating_bar_transit"/>
 
         <de.hdodenhof.circleimageview.CircleImageView
             xmlns:app="http://schemas.android.com/apk/res-auto"
@@ -34,6 +35,7 @@
             android:layout_height="130dp"
             android:layout_gravity="center"
             android:layout_marginTop="15dp"
+            android:transitionName="@string/image_transit"
             android:src="@drawable/grey_placeholder"/>
         <TextView
             android:id="@+id/card_venue_name"
@@ -43,6 +45,7 @@
             android:gravity="center"
             android:layout_marginTop="20dp"
             android:textSize="18sp"
+            android:transitionName="@string/text_transit"
             android:text="sample"
             android:textColor="@color/pink" />
         <TextView

@@ -1,0 +1,157 @@
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:fab="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.harrykristi.hangapp.VenueFragment">
+
+    <android.support.design.widget.AppBarLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:theme="@style/AppTheme.AppBarOverlay">
+
+        <android.support.v7.widget.Toolbar
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            android:background="@color/colorPrimary"
+            app:popupTheme="@style/AppTheme.PopupOverlay" />
+
+    </android.support.design.widget.AppBarLayout>
+
+    <com.melnykov.fab.ObservableScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/scroll_view_container">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <FrameLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <HorizontalScrollView
+                    android:layout_width="match_parent"
+                    android:layout_height="180dp">
+
+                    <LinearLayout
+                        android:id="@+id/image_carousel"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:orientation="horizontal">
+
+                        <ImageView
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:transitionName="@string/image_transit" />
+
+                    </LinearLayout>
+                </HorizontalScrollView>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="bottom"
+                    android:orientation="vertical"
+                    android:padding="5dp">
+
+                    <RatingBar
+                        android:id="@+id/venue_activity_rating"
+                        style="@style/ratingBarStyling"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="left"
+                        android:clickable="false"
+                        android:numStars="5"
+                        android:rating="2"
+                        android:stepSize="0.5"
+                        android:transitionName="@string/rating_bar_transit" />
+
+                </LinearLayout>
+            </FrameLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="120dp"
+                    android:orientation="horizontal"
+                    android:paddingBottom="13dp"
+                    android:paddingTop="10dp"
+                    android:weightSum="1">
+
+                    <TextView
+                        android:id="@+id/venue_activity_address"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="0.65"
+                        android:padding="10dp"
+                        android:textSize="16sp" />
+
+                    <View
+                        android:id="@+id/splitter"
+                        android:layout_width="1dp"
+                        android:layout_height="match_parent"
+                        android:background="@color/coolGreyLight"
+                        android:paddingBottom="2dp"
+                        android:paddingTop="2dp" />
+
+                    <ImageView
+                        android:id="@+id/venue_activity_map"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="0.35"
+                        android:scaleType="centerCrop"
+                        android:src="@drawable/sample_map" />
+
+                </LinearLayout>
+            </LinearLayout>
+
+            <View
+                android:layout_width="fill_parent"
+                android:layout_height="1dp"
+                android:layout_marginLeft="30dp"
+                android:layout_marginRight="30dp"
+                android:background="@color/coolGreyLight"
+                android:paddingLeft="20dp"
+                android:layout_marginBottom="20dp"/>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/recent_checkins_textview"
+                android:paddingLeft="10dp"
+                android:text="@string/recent_checkins_string"
+                android:textColor="@color/coolGrey"
+                android:textSize="14sp" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/recent_checkins_container"
+                android:orientation="horizontal"
+                android:padding="10dp">
+
+            </LinearLayout>
+        </LinearLayout>
+    </com.melnykov.fab.ObservableScrollView>
+    <com.melnykov.fab.FloatingActionButton
+        android:id="@+id/fab"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|right"
+        android:layout_margin="16dp"
+        fab:fab_type="normal"
+        android:src="@drawable/ic_fob_drink"
+        fab:fab_colorNormal="@color/pink"
+        fab:fab_colorPressed="@color/pink"
+        fab:fab_colorRipple="@color/colorPrimary" />
+
+</FrameLayout>
+

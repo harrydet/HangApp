@@ -2,8 +2,10 @@ package com.harrykristi.hangapp.Interfaces;
 
 import android.telecom.Call;
 
+import com.harrykristi.hangapp.Models.ResponseUserSearching;
 import com.harrykristi.hangapp.Models.UserProfileResponse;
 import com.harrykristi.hangapp.Models.HangAppResponse;
+import com.harrykristi.hangapp.events.ResponseUserSearchingEvent;
 
 import retrofit.Callback;
 import retrofit.http.Field;
@@ -16,6 +18,7 @@ import retrofit.http.Query;
 public interface HangAppAPI {
     @GET("/users/match_history/{id}")
     public void fetchPreviousMatches(@Path("id") String id,
+                                     @Query("venueId") String venueId,
                                      Callback<UserProfileResponse> callback);
 
     @FormUrlEncoded
@@ -29,4 +32,11 @@ public interface HangAppAPI {
     public void fetchUserWithParams(@Path("object_id") String object_id,
                                     @Query("profilePictureUrl") boolean profilePicture,
                                     Callback<UserProfileResponse> callback);
+
+    @FormUrlEncoded
+    @POST("/startSearching")
+    public void startSearching(@Field("object_id") String object_id,
+                               @Field("venue_id") String venue_id,
+                               Callback<ResponseUserSearching> callback);
+
 }

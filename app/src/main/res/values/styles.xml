@@ -24,4 +24,10 @@
         <item name="android:maxHeight">27dip</item>
     </style>
 
+    <style name="MaterialAnimations" parent="@style/Theme.AppCompat.Light.NoActionBar">
+
+        <item name="android:windowContentTransitions">true</item>
+
+    </style>
+
 </resources>

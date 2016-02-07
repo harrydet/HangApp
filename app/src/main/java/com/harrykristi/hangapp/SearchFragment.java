@@ -63,6 +63,8 @@ public class SearchFragment extends Fragment implements AdapterView.OnItemSelect
     private static final String LAST_UPDATED_TIME_STRING_KEY = "last update time";
     private static final int MY_PERMISSIONS_REQUEST_FINE_LOCATION = 0;
 
+    private static final String ARG_VENUEID = "param_venueId";
+
     // TODO: Rename and change types of parameters
     private String mParam1;
     private String mParam2;
@@ -391,12 +393,12 @@ public class SearchFragment extends Fragment implements AdapterView.OnItemSelect
     @Override
     public void onRecyclerViewClicked(View v, int position) {
         //Toast.makeText(getContext(), "Clicked on card number " + position, Toast.LENGTH_SHORT).show();
-        mListener.onSearchFragmentInteraction(response.getVenueAt(position));
+        mListener.onSearchFragmentInteraction(response.getVenueAt(position), v);
     }
 
     public interface OnFragmentInteractionListener {
         // TODO: Update argument type and name
-        public void onSearchFragmentInteraction(VenueFoursquare venueFoursquare);
+        public void onSearchFragmentInteraction(VenueFoursquare venueFoursquare, View clickedView);
     }
 
     protected synchronized void buildGoogleApiClient() {

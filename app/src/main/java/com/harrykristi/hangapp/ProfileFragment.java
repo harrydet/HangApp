@@ -127,7 +127,7 @@ public class ProfileFragment extends Fragment {
         mDatasetVenue = null;
 
         getBus().register(this);
-        getBus().post(new LoadPreviousMatchesEvent(ParseUser.getCurrentUser().getObjectId()));
+        getBus().post(new LoadPreviousMatchesEvent(ParseUser.getCurrentUser().getObjectId(), null));
     }
 
     @Override
@@ -429,24 +429,28 @@ public class ProfileFragment extends Fragment {
             Picasso.with(getContext()).load(fileUri).placeholder(R.drawable.default_profile_icon).noFade().into(mProfilePicture);
             mProfilePicture.setAlpha(1.0f);
 
-            callbacks.OnImageUpdated(fileUri.toString());
-            SharedPreferences myPrefs = mActivity.getSharedPreferences("myPrefs", Context.MODE_PRIVATE);
-            SharedPreferences.Editor editor = myPrefs.edit();
-            editor.putString("profile_picture_url", fileUri.toString());
-            editor.commit();
+            try {
+                callbacks.OnImageUpdated(fileUri.toString());
+                SharedPreferences myPrefs = mActivity.getSharedPreferences("myPrefs", Context.MODE_PRIVATE);
+                SharedPreferences.Editor editor = myPrefs.edit();
+                editor.putString("profile_picture_url", fileUri.toString());
+                editor.commit();
 
-            View tmpView = getView();
-            if(tmpView != null){
-                final Snackbar snackbar = Snackbar.make(getView(), event.getMessage(), Snackbar.LENGTH_SHORT);
-                snackbar.setAction("OK", new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        snackbar.dismiss();
-                    }
-                });
+                View tmpView = getView();
+                if (tmpView != null) {
+                    final Snackbar snackbar = Snackbar.make(getView(), event.getMessage(), Snackbar.LENGTH_SHORT);
+                    snackbar.setAction("OK", new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            snackbar.dismiss();
+                        }
+                    });
 
-                snackbar.setActionTextColor(ContextCompat.getColor(getContext(), R.color.limeGreen));
-                snackbar.show();
+                    snackbar.setActionTextColor(ContextCompat.getColor(getContext(), R.color.limeGreen));
+                    snackbar.show();
+                }
+            } catch (Exception e){
+                callbacks.DisplaySnackBarWith("Image upload failed.");
             }
         } else {
             mProfilePicture.setAlpha(1.0f);

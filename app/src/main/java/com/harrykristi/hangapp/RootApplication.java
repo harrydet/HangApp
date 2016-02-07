@@ -48,6 +48,7 @@ public class RootApplication extends Application {
     private HangAppAPI buildHangAppApi() {
         return new RestAdapter.Builder()
                         .setEndpoint("http://178.62.117.251/rest_endpoints/v1")
+                        .setLogLevel(RestAdapter.LogLevel.FULL)
                         .build()
                         .create(HangAppAPI.class);
     }

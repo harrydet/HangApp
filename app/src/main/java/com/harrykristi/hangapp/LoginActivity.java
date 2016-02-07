@@ -121,7 +121,8 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
             public void done(ParseUser user, ParseException e) {
                 if (user != null) {
                     ParseInstallation installation = ParseInstallation.getCurrentInstallation();
-                    installation.put("objectId", ParseUser.getCurrentUser().getObjectId());
+                    //installation.put("objectId", ParseUser.getCurrentUser().getObjectId());
+                    installation.put("user", ParseUser.getCurrentUser());
                     installation.saveInBackground();
                     ParsePush.subscribeInBackground("user_" + ParseUser.getCurrentUser().getObjectId());
                     Intent authenticatedIntent = new Intent(getApplicationContext(), AuthenticatedActivity.class);

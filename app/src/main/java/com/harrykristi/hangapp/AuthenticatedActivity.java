@@ -1,9 +1,12 @@
 package com.harrykristi.hangapp;
 
+import android.app.ActivityOptions;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.design.widget.CoordinatorLayout;
+import android.support.design.widget.Snackbar;
 import android.support.v7.app.ActionBar;
 import android.view.View;
 import android.support.design.widget.NavigationView;
@@ -36,6 +39,10 @@ public class AuthenticatedActivity extends AppCompatActivity
 
     CircleImageView userProfilePicture;
     private Bus mBus;
+    private CoordinatorLayout coordinatorLayout;
+    private static final String ARG_VENUEID = "param_venueId";
+    private static final String ARG_VENUE_NAME = "param_venueName";
+    private static final String ARG_VENUE_RATING = "param_rating";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -73,6 +80,8 @@ public class AuthenticatedActivity extends AppCompatActivity
         android.support.v4.app.FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
         ft.replace(R.id.fragment_layout, SearchFragment.newInstance("a", "b"));
         ft.commit();
+
+        coordinatorLayout = (CoordinatorLayout) findViewById(R.id.coordinator_layout);
     }
 
     @Override
@@ -156,8 +165,28 @@ public class AuthenticatedActivity extends AppCompatActivity
     }
 
     @Override
-    public void onSearchFragmentInteraction(VenueFoursquare venueFoursquare) {
-        Toast.makeText(AuthenticatedActivity.this, venueFoursquare.getName(), Toast.LENGTH_SHORT).show();
+    public void onSearchFragmentInteraction(VenueFoursquare venueFoursquare, View clickedView) {
+        Intent i = new Intent(AuthenticatedActivity.this, VenueActivity.class);
+
+        View sharedViewText = clickedView.findViewById(R.id.card_venue_name);
+        View sharedRatingBar = clickedView.findViewById(R.id.venue_card_rating);
+        String transitionNameText = getString(R.string.text_transit);
+        String transitionNameRatingBar = getString(R.string.rating_bar_transit);
+
+        View sharedViewImage = clickedView.findViewById(R.id.card_round_photo);
+        String transitionNameImage = getString(R.string.image_transit);
+
+        i.putExtra(ARG_VENUEID, venueFoursquare.getId());
+        i.putExtra(ARG_VENUE_NAME, venueFoursquare.getName());
+        i.putExtra(ARG_VENUE_RATING, venueFoursquare.getRating());
+
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
+            ActivityOptions transitionActivityOptions = ActivityOptions.makeSceneTransitionAnimation(AuthenticatedActivity.this, sharedRatingBar, transitionNameRatingBar);
+            startActivity(i, transitionActivityOptions.toBundle());
+        } else {
+            startActivity(i);
+        }
+
     }
 
     @Override
@@ -176,8 +205,6 @@ public class AuthenticatedActivity extends AppCompatActivity
             }
         } else {
             String url = response.getProfilePictureUrl();
-            Picasso.with(this).setIndicatorsEnabled(true);
-            Picasso.with(this).setLoggingEnabled(true);
             Picasso.with(this).load(url).placeholder(R.drawable.default_profile_icon).noFade().into(userProfilePicture);
             SharedPreferences myPrefs = this.getSharedPreferences("myPrefs", MODE_PRIVATE);
             SharedPreferences.Editor editor = myPrefs.edit();
@@ -190,5 +217,16 @@ public class AuthenticatedActivity extends AppCompatActivity
     @Override
     public void OnImageUpdated(String url) {
         Picasso.with(this).load(url).placeholder(R.drawable.default_profile_icon).noFade().into(userProfilePicture);
+    }
+
+    @Override
+    public void DisplaySnackBarWith(String message) {
+        final Snackbar snackbar = Snackbar.make(coordinatorLayout, message, Snackbar.LENGTH_LONG);
+        snackbar.setAction("RETRY", new View.OnClickListener(){
+            @Override
+            public void onClick(View v) {
+                //launchUploadProcess(true);
+            }
+        });
     }
 }

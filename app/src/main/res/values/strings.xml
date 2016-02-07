@@ -47,7 +47,7 @@
         <item>20km</item>
     </string-array>
 
-<!-- TODO: Remove or change this placeholder text -->
+    <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="profile_string_profile">PROFILE</string>
     <string name="profile_test_name_string">Harry Detsis</string>
@@ -55,4 +55,9 @@
     <string name="profile_string_matches">Matches</string>
     <string name="previous_venue_placeholder_string">Previous Venue Placeholder</string>
     <string name="previous_venue_with_placeholder_string">with Harry Detsis</string>
+    <string name="text_transit">text transit</string>
+    <string name="image_transit">image transit</string>
+    <string name="title_activity_venue">VenueActivity</string>
+    <string name="rating_bar_transit">rating_bar_transit</string>
+    <string name="recent_checkins_string">Recent Checkins:</string>
 </resources>

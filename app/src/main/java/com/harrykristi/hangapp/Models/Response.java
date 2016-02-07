@@ -2,6 +2,8 @@ package com.harrykristi.hangapp.Models;
 
 import java.util.List;
 
+import fi.foyt.foursquare.api.entities.HereNow;
+
 public class Response {
     public List<Group> getGroups(){
         return groups;
@@ -11,7 +13,7 @@ public class Response {
         return groups.get(0).getVenueAt(position).getName();
     }
 
-    public int totalCheckinsAt(int position){
+    public long totalCheckinsAt(int position){
         return groups.get(0).getVenueAt(position).getCurrentCheckins();
     }
 
@@ -31,12 +33,18 @@ public class Response {
         return groups.get(0).getVenueAt(position);
     }
 
+    public VenueFoursquare getVenue(){
+        return venue;
+    }
+
     List<Group> groups;
+    VenueFoursquare venue;
 
     public boolean extend(Response responseExtension) {
         groups.get(0).extendItems(responseExtension.getGroups().get(0).getItems());
         return responseExtension.getTotalVenues() == 10;
     }
+
 }
 
 class ResponseItems {
@@ -89,9 +97,7 @@ class Tip {
 class Stats{
     int totalCheckins;
 
-    public int getCurrentCheckins() {
-        return currentCheckins;
-    }
+    HereNow hereNow;
 
     public int getTotalTips() {
         return totalTips;
@@ -101,6 +107,8 @@ class Stats{
         return totalCheckins;
     }
 
+    public HereNow getHereNow(){return hereNow;}
+
     int currentCheckins;
     int totalTips;
 }
@@ -109,24 +117,40 @@ class Photos {
     int count;
     List<PhotoGroup> groups;
 
+    public String getPhotoPrefix(int index){
+        return groups.get(0).getPhotoPrefix(index);
+    }
+
+    public String getPhotoSuffix(int index){
+        return groups.get(0).getPhotoSuffix(index);
+    }
+
     public String getPhotoPrefix(){
-        return groups.get(0).getPhotoPrefix();
+        return groups.get(0).getPhotoPrefix(0);
     }
 
     public String getPhotoSuffix(){
-        return groups.get(0).getPhotoSuffix();
+        return groups.get(0).getPhotoSuffix(0);
+    }
+
+    public int getTotalPhotos(){
+        return groups.get(0).getTotalPhotos();
     }
 
 }
 
 class PhotoGroup{
     List<PhotoItem> items;
-    public String getPhotoPrefix(){
-        return items.get(0).getPrefix();
+    public String getPhotoPrefix(int index){
+        return items.get(index).getPrefix();
     }
 
-    public String getPhotoSuffix(){
-        return items.get(0).getSuffix();
+    public String getPhotoSuffix(int index){
+        return items.get(index).getSuffix();
+    }
+
+    public int getTotalPhotos(){
+        return items.size();
     }
 }
 

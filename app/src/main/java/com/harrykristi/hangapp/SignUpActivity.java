@@ -72,7 +72,8 @@ public class SignUpActivity extends AppCompatActivity implements View.OnClickLis
                     public void done(ParseException e) {
                         if (e == null) {
                             ParseInstallation installation = ParseInstallation.getCurrentInstallation();
-                            installation.put("objectId", ParseUser.getCurrentUser().getObjectId());
+                            installation.put("user", newUser);
+                            //installation.put("objectId", ParseUser.getCurrentUser().getObjectId());
                             installation.saveInBackground();
                             ParsePush.subscribeInBackground("user_" + ParseUser.getCurrentUser().getObjectId());
                             Intent authenticatedActivityIntent = new Intent(getApplicationContext(), AuthenticatedActivity.class);
