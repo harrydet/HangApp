@@ -60,4 +60,6 @@
     <string name="title_activity_venue">VenueActivity</string>
     <string name="rating_bar_transit">rating_bar_transit</string>
     <string name="recent_checkins_string">Recent Checkins:</string>
+    <string name="tips_comments_card"><![CDATA[Tips & Comments:]]></string>
+    <string name="user_profile_picture_accessibility">User profile picture</string>
 </resources>

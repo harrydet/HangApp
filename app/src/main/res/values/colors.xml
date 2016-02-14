@@ -10,4 +10,5 @@
     <color name="coolGrey">#6D6E76</color>
     <color name="coolGreyLight">#94959A</color>
     <color name="limeGreen">#88C425</color>
+    <color name="cardViewShadowEnd">#03000000</color>
 </resources>

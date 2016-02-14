@@ -241,6 +241,8 @@ public class VenueActivity extends AppCompatActivity implements View.OnClickList
             });
         }
 
+
+
     }
 
     @Subscribe

@@ -1,6 +1,11 @@
 package com.harrykristi.hangapp.Models;
 
+import java.util.Objects;
+
+import fi.foyt.foursquare.api.entities.CompleteTip;
 import fi.foyt.foursquare.api.entities.HereNow;
+import fi.foyt.foursquare.api.entities.TipGroup;
+import fi.foyt.foursquare.api.entities.Tips;
 
 public class VenueFoursquare {
     String id;
@@ -20,10 +25,22 @@ public class VenueFoursquare {
 
     HereNow hereNow;
 
+    Tips tips;
+
     public Stats getStats(){return stats;}
 
     public long getCurrentCheckins(){
         return hereNow.getCount();
+    }
+
+    public CompleteTip[] getTips(){
+        TipGroup[] groups = tips.getGroups();
+        for (TipGroup group : groups) {
+            if (Objects.equals(group.getType(), "others")) {
+                return group.getItems();
+            }
+        }
+        return null;
     }
 
     public float getRating() {
