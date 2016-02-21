@@ -56,6 +56,7 @@ public class RootApplication extends Application {
     private FoursquareAPI buildFoursquareApi(){
         return new RestAdapter.Builder()
                         .setEndpoint("https://api.foursquare.com/v2")
+                        .setLogLevel(RestAdapter.LogLevel.FULL)
                         .build()
                         .create(FoursquareAPI.class);
     }

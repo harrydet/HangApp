@@ -9,17 +9,23 @@ import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.util.TypedValue;
+import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ListView;
 import android.widget.RatingBar;
 import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.harrykristi.hangapp.Adapters.TipCardArrayAdapter;
+import com.harrykristi.hangapp.Models.TipVenue;
 import com.harrykristi.hangapp.Models.User;
 import com.harrykristi.hangapp.Models.UserProfileResponse;
+import com.harrykristi.hangapp.Models.VenueFoursquare;
 import com.harrykristi.hangapp.events.DataLoadedPreviousMatchesEvent;
 import com.harrykristi.hangapp.events.DataLoadedSpecificVenue;
 import com.harrykristi.hangapp.events.LoadPreviousMatchesEvent;
@@ -35,6 +41,8 @@ import com.squareup.otto.Subscribe;
 import com.squareup.picasso.MemoryPolicy;
 import com.squareup.picasso.NetworkPolicy;
 import com.squareup.picasso.Picasso;
+
+import org.w3c.dom.Text;
 
 import java.util.List;
 import java.util.Locale;
@@ -169,6 +177,7 @@ public class VenueActivity extends AppCompatActivity implements View.OnClickList
         switch (v.getId()){
             case R.id.fab:
                 mBus.post(new StartUserSearchingEvent(ParseUser.getCurrentUser().getObjectId(), venueId));
+                break;
         }
     }
 
@@ -183,7 +192,7 @@ public class VenueActivity extends AppCompatActivity implements View.OnClickList
         int layoutHeight = imageCarousel.getHeight();
         urls = new String[event.getmFoursquareResponse().getResponse().getVenue().getTotalPhotos()];
         imageViews = new ImageView[event.getmFoursquareResponse().getResponse().getVenue().getTotalPhotos()];
-        for (int i = 0; i < totalPhotos; i++) {
+        for(int i = 0; i < totalPhotos; i++){
             String prefix = event.getmFoursquareResponse()
                     .getResponse()
                     .getVenue()
@@ -193,17 +202,32 @@ public class VenueActivity extends AppCompatActivity implements View.OnClickList
                     .getResponse()
                     .getVenue()
                     .getPhotoSuffix(i);
-
             String url = prefix + layoutHeight + "x" + layoutHeight + suffix;
+            urls[i] = url;
+        }
+        for (int i = 0; i < totalPhotos; i++) {
             ImageView imageView = new ImageView(this);
             imageView.setId(i);
             imageView.setPadding(0, 0, 0, 0);
             imageView.setScaleType(ImageView.ScaleType.FIT_XY);
+            final int position = i;
+            imageView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Intent intent = new Intent(VenueActivity.this, FullScreenViewActivity.class);
+                    intent.putExtra("position", position);
+
+                    Bundle b = new Bundle();
+                    b.putStringArray("data", urls);
+
+                    intent.putExtras(b);
+                    VenueActivity.this.startActivity(intent);
+                }
+            });
 
             imageCarousel.addView(imageView);
-            urls[i] = url;
             imageViews[i] = imageView;
-            Picasso.with(this).load(url).memoryPolicy(MemoryPolicy.NO_CACHE).networkPolicy(NetworkPolicy.NO_CACHE).placeholder(R.drawable.grey_placeholder).into(imageView);
+            Picasso.with(this).load(urls[i]).memoryPolicy(MemoryPolicy.NO_CACHE).networkPolicy(NetworkPolicy.NO_CACHE).placeholder(R.drawable.grey_placeholder).into(imageView);
         }
 
         final float lat = event.getmFoursquareResponse()
@@ -241,6 +265,24 @@ public class VenueActivity extends AppCompatActivity implements View.OnClickList
             });
         }
 
+
+        LinearLayout lv = (LinearLayout)findViewById(R.id.comments_listview);
+        LayoutInflater li = LayoutInflater.from(this);
+
+        for(int i = 0; i < 4; i++){
+            View viewText = li.inflate(R.layout.tip_list_item, lv, false);
+            TextView tv = (TextView) viewText.findViewById(R.id.tip_text);
+            List<TipVenue> tipVenues = event.getmFoursquareResponse().getResponse().getVenue().getTips();
+            tv.setText(tipVenues.get(i).getText());
+
+            ImageView iv = (ImageView) viewText.findViewById(R.id.tip_profile_picture);
+            Picasso.with(this).load(tipVenues.get(i).getUser().getPhoto().getPrefix()+"50x50"+
+                    tipVenues.get(i).getUser().getPhoto().getSuffix()).placeholder(R.drawable.grey_placeholder_small).into(iv);
+
+            lv.addView(viewText);
+
+
+        }
 
 
     }

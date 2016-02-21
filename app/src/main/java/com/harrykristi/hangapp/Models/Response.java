@@ -71,6 +71,10 @@ class Group {
     String type;
     String name;
     List<Item> items;
+
+    public String getType() {
+        return type;
+    }
 }
 
 class Item {
@@ -80,8 +84,12 @@ class Item {
 
     Reason reasons;
     VenueFoursquare venue;
-    List<Tip> tips;
+    List<TipVenue> tips;
     String referralId;
+
+    public List<TipVenue> getTips(){
+        return tips;
+    }
 }
 
 class Reason {
@@ -165,4 +173,17 @@ class PhotoItem{
 
     String prefix;
     String suffix;
+}
+
+class TipGroup{
+    List<Group> groups;
+
+    public Group getGroup(){
+        for (Group group :
+                groups) {
+            if (group.getType() == "others") return group;
+        }
+
+        return null;
+    }
 }

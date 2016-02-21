@@ -89,6 +89,17 @@
             </intent-filter>
         </activity>
 
+        <activity android:name=".FullScreenViewActivity"
+            android:label="FullScreenActivity"
+            android:parentActivityName=".VenueActivity"
+            android:theme="@style/AppTheme.NoActionBar"
+            tools:ignore="UnusedAttribute">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".VenueActivity" />
+
+        </activity>
+
 
         <service android:name="com.parse.PushService" />
 
