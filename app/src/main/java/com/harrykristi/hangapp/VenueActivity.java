@@ -1,6 +1,7 @@
 package com.harrykristi.hangapp;
 
 import android.content.Intent;
+import android.graphics.Color;
 import android.net.Uri;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.ActionBar;
@@ -22,6 +23,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.harrykristi.hangapp.Adapters.TipCardArrayAdapter;
+import com.harrykristi.hangapp.Models.CompactVenue;
 import com.harrykristi.hangapp.Models.TipVenue;
 import com.harrykristi.hangapp.Models.User;
 import com.harrykristi.hangapp.Models.UserProfileResponse;
@@ -29,8 +31,10 @@ import com.harrykristi.hangapp.Models.VenueFoursquare;
 import com.harrykristi.hangapp.events.DataLoadedPreviousMatchesEvent;
 import com.harrykristi.hangapp.events.DataLoadedSpecificVenue;
 import com.harrykristi.hangapp.events.LoadPreviousMatchesEvent;
+import com.harrykristi.hangapp.events.LoadSimilarVenuesEvent;
 import com.harrykristi.hangapp.events.LoadSpecificVenueEvent;
 import com.harrykristi.hangapp.events.ResponseUserSearchingEvent;
+import com.harrykristi.hangapp.events.SimilarVenuesLoadedEvent;
 import com.harrykristi.hangapp.events.StartUserSearchingEvent;
 import com.harrykristi.hangapp.helpers.BusProvider;
 import com.melnykov.fab.FloatingActionButton;
@@ -54,6 +58,7 @@ public class VenueActivity extends AppCompatActivity implements View.OnClickList
     private static final String ARG_VENUE_NAME = "param_venueName";
     private static final String ARG_VENUE_RATING = "param_rating";
     private Bus mBus;
+    private final String PUB_URL="https://ss3.4sqi.net/img/categories_v2/nightlife/pub_88.png";
 
     private LinearLayout imageCarousel;
     private ObservableScrollView scrollView;
@@ -139,6 +144,7 @@ public class VenueActivity extends AppCompatActivity implements View.OnClickList
         }
         getBus().post(new LoadSpecificVenueEvent(venueId));
         getBus().post(new LoadPreviousMatchesEvent(ParseUser.getCurrentUser().getObjectId(), venueId));
+        getBus().post(new LoadSimilarVenuesEvent(venueId));
         super.onResume();
     }
 
@@ -265,14 +271,14 @@ public class VenueActivity extends AppCompatActivity implements View.OnClickList
             });
         }
 
-
+        //Populate tips
         LinearLayout lv = (LinearLayout)findViewById(R.id.comments_listview);
         LayoutInflater li = LayoutInflater.from(this);
 
+        List<TipVenue> tipVenues = event.getmFoursquareResponse().getResponse().getVenue().getTips();
         for(int i = 0; i < 4; i++){
             View viewText = li.inflate(R.layout.tip_list_item, lv, false);
             TextView tv = (TextView) viewText.findViewById(R.id.tip_text);
-            List<TipVenue> tipVenues = event.getmFoursquareResponse().getResponse().getVenue().getTips();
             tv.setText(tipVenues.get(i).getText());
 
             ImageView iv = (ImageView) viewText.findViewById(R.id.tip_profile_picture);
@@ -283,7 +289,6 @@ public class VenueActivity extends AppCompatActivity implements View.OnClickList
 
 
         }
-
 
     }
 
@@ -316,6 +321,27 @@ public class VenueActivity extends AppCompatActivity implements View.OnClickList
     @Subscribe
     public void OnUserSearching(final ResponseUserSearchingEvent event){
         Toast.makeText(VenueActivity.this, "Reposne: " + event.getMessage(), Toast.LENGTH_LONG).show();
+    }
+
+    @Subscribe
+    public void OnSimilarVenuesLoaded(final SimilarVenuesLoadedEvent event){
+        //Populate similar venues
+        LinearLayout lvVenues = (LinearLayout)findViewById(R.id.similar_places_listview);
+        LayoutInflater liVenues = LayoutInflater.from(this);
+
+        CompactVenue[] venues = event.getResponse().getResponse().getSimilarVenues().getItems();
+        for(int i = 0; i < 4; i++){
+            View viewText = liVenues.inflate(R.layout.tip_list_item, lvVenues, false);
+            TextView tv = (TextView) viewText.findViewById(R.id.tip_text);
+            tv.setText(venues[i].getName());
+
+            ImageView iv = (ImageView) viewText.findViewById(R.id.tip_profile_picture);
+            iv.setBackgroundColor(Color.rgb(43, 43, 46));
+            Picasso.with(this).load(venues[i].getCategories()[0].getIcon().getPrefix()+"88"+venues[i].getCategories()[0].getIcon().getSuffix()).placeholder(R.drawable.grey_placeholder_small).into(iv);
+
+            lvVenues.addView(viewText);
+
+        }
     }
 
     private Bus getBus() {

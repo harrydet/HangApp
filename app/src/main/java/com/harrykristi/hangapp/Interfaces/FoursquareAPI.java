@@ -2,6 +2,8 @@ package com.harrykristi.hangapp.Interfaces;
 
 
 import com.harrykristi.hangapp.Models.FoursquareResponse;
+import com.harrykristi.hangapp.Models.SimilarVenuesResponse;
+import com.harrykristi.hangapp.events.SimilarVenuesLoadedEvent;
 
 import retrofit.Callback;
 import retrofit.http.GET;
@@ -27,4 +29,10 @@ public interface FoursquareAPI {
                                    @Query("oauth_token") String oAuth,
                                    @Query("v") String v,
                                    Callback<FoursquareResponse> callback);
+
+    @GET("/venues/{id}/similar")
+    public void fetchSimilarVenues(@Path("id") String id,
+                                   @Query("oauth_token") String oAuth,
+                                   @Query("v") String v,
+                                   Callback<SimilarVenuesResponse> callback);
 }

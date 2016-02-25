@@ -62,4 +62,5 @@
     <string name="recent_checkins_string">Recent Checkins:</string>
     <string name="tips_comments_card"><![CDATA[Tips & Comments:]]></string>
     <string name="user_profile_picture_accessibility">User profile picture</string>
+    <string name="venue_activity_similar_places_string">Similar places</string>
 </resources>

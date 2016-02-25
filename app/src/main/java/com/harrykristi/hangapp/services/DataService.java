@@ -2,6 +2,7 @@ package com.harrykristi.hangapp.services;
 
 import com.harrykristi.hangapp.Interfaces.HangAppAPI;
 import com.harrykristi.hangapp.Models.ResponseUserSearching;
+import com.harrykristi.hangapp.Models.SimilarVenuesResponse;
 import com.harrykristi.hangapp.Models.UserProfileResponse;
 import com.harrykristi.hangapp.events.ApiErrorEvent;
 import com.harrykristi.hangapp.events.DataLoadedPreviousMatchesEvent;
@@ -10,11 +11,13 @@ import com.harrykristi.hangapp.events.DataLoadedUserEvent;
 import com.harrykristi.hangapp.events.DataLoadedVenueEvent;
 import com.harrykristi.hangapp.events.GetUserPictureEvent;
 import com.harrykristi.hangapp.events.LoadPreviousMatchesEvent;
+import com.harrykristi.hangapp.events.LoadSimilarVenuesEvent;
 import com.harrykristi.hangapp.events.LoadSpecificVenueEvent;
 import com.harrykristi.hangapp.events.LoadVenuesEvent;
 import com.harrykristi.hangapp.Interfaces.FoursquareAPI;
 import com.harrykristi.hangapp.events.RegisterUserEvent;
 import com.harrykristi.hangapp.events.ResponseUserSearchingEvent;
+import com.harrykristi.hangapp.events.SimilarVenuesLoadedEvent;
 import com.harrykristi.hangapp.events.StartUserSearchingEvent;
 import com.harrykristi.hangapp.events.UserRegisteredResponseEvent;
 import com.harrykristi.hangapp.Models.FoursquareResponse;
@@ -153,10 +156,28 @@ public class DataService {
     public void onLoadData(final StartUserSearchingEvent event){
         mHangAppApi.startSearching(event.getUser_id(),
                 event.getVenue_id(),
-                new Callback<ResponseUserSearching>(){
+                new Callback<ResponseUserSearching>() {
                     @Override
                     public void success(ResponseUserSearching responseUserSearching, Response response) {
                         mBus.post(new ResponseUserSearchingEvent(responseUserSearching.isError(), responseUserSearching.getMessage()));
+                    }
+
+                    @Override
+                    public void failure(RetrofitError error) {
+                        mBus.post(new ApiErrorEvent(error));
+                    }
+                });
+    }
+
+    @Subscribe
+    public void onLoadData(final LoadSimilarVenuesEvent event){
+        mFoursquareApi.fetchSimilarVenues(event.getVenueId(),
+                "NMPSMEOV355DFL0B0QXFNNHEDXTNKFEQWUHBXQMFTOERMJLY",
+                "20151123",
+                new Callback<SimilarVenuesResponse>() {
+                    @Override
+                    public void success(SimilarVenuesResponse similarVenuesResponse, Response response) {
+                        mBus.post(new SimilarVenuesLoadedEvent(similarVenuesResponse));
                     }
 
                     @Override

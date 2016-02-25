@@ -39,6 +39,11 @@ public class Response {
 
     List<Group> groups;
     VenueFoursquare venue;
+    VenueGroup similarVenues;
+
+    public VenueGroup getSimilarVenues() {
+        return similarVenues;
+    }
 
     public boolean extend(Response responseExtension) {
         groups.get(0).extendItems(responseExtension.getGroups().get(0).getItems());
