@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="horizontal" android:layout_width="match_parent"
-    android:layout_height="wrap_content"
+    android:layout_height="40dp"
     android:weightSum="1">
 
     <de.hdodenhof.circleimageview.CircleImageView
-        android:id="@+id/tip_profile_picture"
+        android:id="@+id/similar_venue_profile_picture"
         android:layout_width="30dp"
         android:layout_height="30dp"
         android:padding="2dp"
@@ -14,12 +14,12 @@
         android:contentDescription="@string/user_profile_picture_accessibility" />
 
     <TextView
-        android:id="@+id/tip_text"
+        android:id="@+id/similar_venue_text"
         android:layout_width="0dp"
         android:layout_height="match_parent"
         android:padding="10dp"
         android:layout_weight="0.8"
-        android:gravity="left"
+        android:gravity="center"
         android:ellipsize="end"
         android:maxLines="1"
         android:singleLine="true"

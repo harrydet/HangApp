@@ -147,7 +147,9 @@ class Photos {
     }
 
     public int getTotalPhotos(){
-        return groups.get(0).getTotalPhotos();
+        if(groups != null)
+            return groups.get(0).getTotalPhotos();
+        return 0;
     }
 
 }

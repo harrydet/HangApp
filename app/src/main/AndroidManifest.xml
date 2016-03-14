@@ -15,6 +15,10 @@
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
 
+    !-- needed for older devices -
+    used to check app background / foreground status -->
+    <uses-permission android:name="android.permission.GET_TASKS" />
+
     <permission
         android:name="android.permission.ACCESS_FINE_LOCATION"
         android:protectionLevel="dangerous" />
@@ -27,6 +31,9 @@
     <permission
         android:name="android.permission.READ_EXTERNAL_STORAGE"
         android:protectionLevel="dangerous" />
+
+    <permission android:name="com.harrykristi.hangapp.permission.C2D_MESSAGE"
+        android:protectionLevel="signature" />
 
     <uses-permission android:name="com.harrykristi.hangapp.permission.C2D_MESSAGE" />
 
@@ -123,6 +130,35 @@
                 <category android:name="com.harrykristi.hangapp" />
             </intent-filter>
         </receiver>
+
+        <!-- START GCM STUFF -->
+        <receiver
+            android:name="com.google.android.gms.gcm.GcmReceiver"
+            android:exported="true"
+            android:permission="com.google.android.c2dm.permission.SEND">
+            <intent-filter>
+                <action android:name="com.google.android.c2dm.intent.RECEIVE" />
+
+                <category android:name="com.harrykristi.hangapp.gcm" />
+            </intent-filter>
+        </receiver>
+
+        <service
+            android:name=".gcm.GcmPushReceiver"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="com.google.android.c2dm.intent.RECEIVE" />
+            </intent-filter>
+        </service>
+
+        <service
+            android:name=".gcm.GcmIntentService"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="com.google.android.gms.iid.InstanceID" />
+            </intent-filter>
+        </service>
+        <!-- END GCM STUFF -->
     </application>
 
 </manifest>

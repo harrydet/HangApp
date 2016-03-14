@@ -7,6 +7,7 @@ import com.harrykristi.hangapp.Interfaces.HangAppAPI;
 import com.harrykristi.hangapp.events.ApiErrorEvent;
 import com.harrykristi.hangapp.helpers.BusProvider;
 import com.harrykristi.hangapp.Interfaces.FoursquareAPI;
+import com.harrykristi.hangapp.helpers.HangAppPreferenceManager;
 import com.harrykristi.hangapp.services.DataService;
 import com.parse.Parse;
 import com.parse.ParseACL;
@@ -22,9 +23,18 @@ public class RootApplication extends Application {
     private DataService mDataService;
     private Bus mBus = BusProvider.getInstance();
 
+    public static final String TAG = RootApplication.class
+            .getSimpleName();
+
+    private static RootApplication mInstance;
+
+    private HangAppPreferenceManager pref;
+
     @Override
     public void onCreate() {
         super.onCreate();
+
+        mInstance = this;
 
         // Enable Local Datastore.
         Parse.enableLocalDatastore(this);
@@ -43,6 +53,18 @@ public class RootApplication extends Application {
         mBus.register(mDataService);
 
         mBus.register(this);
+    }
+
+    public static synchronized RootApplication getmInstance(){
+        return mInstance;
+    }
+
+    public HangAppPreferenceManager getPrefManager(){
+        if (pref == null){
+            pref = new HangAppPreferenceManager(this);
+        }
+
+        return pref;
     }
 
     private HangAppAPI buildHangAppApi() {

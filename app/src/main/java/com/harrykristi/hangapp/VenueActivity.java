@@ -8,6 +8,7 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
@@ -37,6 +38,7 @@ import com.harrykristi.hangapp.events.ResponseUserSearchingEvent;
 import com.harrykristi.hangapp.events.SimilarVenuesLoadedEvent;
 import com.harrykristi.hangapp.events.StartUserSearchingEvent;
 import com.harrykristi.hangapp.helpers.BusProvider;
+import com.harrykristi.hangapp.helpers.ResizeAnimation;
 import com.melnykov.fab.FloatingActionButton;
 import com.melnykov.fab.ObservableScrollView;
 import com.parse.ParseUser;
@@ -76,12 +78,18 @@ public class VenueActivity extends AppCompatActivity implements View.OnClickList
     private String[] urls;
     private ImageView[] imageViews;
 
+    private boolean similarVenuesSent;
+    private boolean tipsSent;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_venue);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+
+        similarVenuesSent = false;
+        tipsSent = false;
 
         ActionBar actionBar = getSupportActionBar();
         if (actionBar != null) {
@@ -125,8 +133,10 @@ public class VenueActivity extends AppCompatActivity implements View.OnClickList
     protected void onStop() {
         for (int i = 0, urlsLength = urls.length; i < urlsLength; i++) {
             String url = urls[i];
-            imageViews[i].setImageBitmap(null);
-            imageViews[i] = null;
+            if(imageViews[i] != null){
+                imageViews[i].setImageBitmap(null);
+                imageViews[i] = null;
+            }
             Picasso.with(this).invalidate(url);
         }
 
@@ -144,7 +154,9 @@ public class VenueActivity extends AppCompatActivity implements View.OnClickList
         }
         getBus().post(new LoadSpecificVenueEvent(venueId));
         getBus().post(new LoadPreviousMatchesEvent(ParseUser.getCurrentUser().getObjectId(), venueId));
-        getBus().post(new LoadSimilarVenuesEvent(venueId));
+        if(!similarVenuesSent){
+            getBus().post(new LoadSimilarVenuesEvent(venueId));
+        }
         super.onResume();
     }
 
@@ -197,7 +209,15 @@ public class VenueActivity extends AppCompatActivity implements View.OnClickList
 
         int layoutHeight = imageCarousel.getHeight();
         urls = new String[event.getmFoursquareResponse().getResponse().getVenue().getTotalPhotos()];
+        final String [] urlsFullRes = new String[event.getmFoursquareResponse().getResponse().getVenue().getTotalPhotos()];
         imageViews = new ImageView[event.getmFoursquareResponse().getResponse().getVenue().getTotalPhotos()];
+
+        DisplayMetrics metrics = this.getResources().getDisplayMetrics();
+
+        //We get width and height in pixels here
+        int width = metrics.widthPixels;
+        int height = metrics.heightPixels;
+
         for(int i = 0; i < totalPhotos; i++){
             String prefix = event.getmFoursquareResponse()
                     .getResponse()
@@ -210,6 +230,7 @@ public class VenueActivity extends AppCompatActivity implements View.OnClickList
                     .getPhotoSuffix(i);
             String url = prefix + layoutHeight + "x" + layoutHeight + suffix;
             urls[i] = url;
+            urlsFullRes[i] = prefix + width + "x" + height + suffix;
         }
         for (int i = 0; i < totalPhotos; i++) {
             ImageView imageView = new ImageView(this);
@@ -224,7 +245,7 @@ public class VenueActivity extends AppCompatActivity implements View.OnClickList
                     intent.putExtra("position", position);
 
                     Bundle b = new Bundle();
-                    b.putStringArray("data", urls);
+                    b.putStringArray("data", urlsFullRes);
 
                     intent.putExtras(b);
                     VenueActivity.this.startActivity(intent);
@@ -271,25 +292,54 @@ public class VenueActivity extends AppCompatActivity implements View.OnClickList
             });
         }
 
-        //Populate tips
-        LinearLayout lv = (LinearLayout)findViewById(R.id.comments_listview);
-        LayoutInflater li = LayoutInflater.from(this);
+        if(!tipsSent){
 
-        List<TipVenue> tipVenues = event.getmFoursquareResponse().getResponse().getVenue().getTips();
-        for(int i = 0; i < 4; i++){
-            View viewText = li.inflate(R.layout.tip_list_item, lv, false);
-            TextView tv = (TextView) viewText.findViewById(R.id.tip_text);
-            tv.setText(tipVenues.get(i).getText());
+            //Populate tips
+            LinearLayout lv = (LinearLayout)findViewById(R.id.comments_listview);
+            LayoutInflater li = LayoutInflater.from(this);
 
-            ImageView iv = (ImageView) viewText.findViewById(R.id.tip_profile_picture);
-            Picasso.with(this).load(tipVenues.get(i).getUser().getPhoto().getPrefix()+"50x50"+
-                    tipVenues.get(i).getUser().getPhoto().getSuffix()).placeholder(R.drawable.grey_placeholder_small).into(iv);
+            List<TipVenue> tipVenues = event.getmFoursquareResponse().getResponse().getVenue().getTips();
+            int totalTips  = tipVenues.size();
+            if(totalTips > 4){
+                totalTips = 4;
+            }
+            for(int i = 0; i < totalTips; i++){
+                final View viewText = li.inflate(R.layout.tip_list_item, lv, false);
+                viewText.setId(0);
+                final TextView tv = (TextView) viewText.findViewById(R.id.tip_text);
+                tv.setText(tipVenues.get(i).getText());
+                final int textCharacters = tipVenues.get(i).getText().length();
 
-            lv.addView(viewText);
+                CircleImageView iv = (CircleImageView) viewText.findViewById(R.id.tip_profile_picture);
+                Picasso.with(this).load(tipVenues.get(i).getUser().getPhoto().getPrefix()+"300x300"+
+                        tipVenues.get(i).getUser().getPhoto().getSuffix()).noFade().placeholder(R.drawable.grey_placeholder_small).into(iv);
+                final int generatedHeight = tv.getHeight();
+                viewText.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        ResizeAnimation resizeAnimation;
+                        if(v.getId() == 0){
+                            resizeAnimation = new ResizeAnimation(v, dpToPx(((int)Math.floor(textCharacters/33) + 1)*generatedHeight));
+                            tv.setSingleLine(false);
+                            tv.setMaxLines((int)Math.floor(textCharacters/33) + 1);
+                            //noinspection ResourceType
+                            v.setId(1);
+                        } else {
+                            resizeAnimation = new ResizeAnimation(v, dpToPx(40));
+                            tv.setSingleLine(true);
+                            tv.setMaxLines(1);
+                            v.setId(0);
+                        }
+                        resizeAnimation.setDuration(600);
+                        v.startAnimation(resizeAnimation);
 
+                    }
+                });
 
+                lv.addView(viewText);
+            }
+            tipsSent = true;
         }
-
     }
 
     @Subscribe
@@ -310,7 +360,7 @@ public class VenueActivity extends AppCompatActivity implements View.OnClickList
                 imageView.setBorderWidth(1);
 
                 recentCheckinsContainer.addView(imageView);
-                Picasso.with(this).load(event.getResponse().getProfilePictureUrl()).memoryPolicy(MemoryPolicy.NO_CACHE).networkPolicy(NetworkPolicy.NO_CACHE).noFade().placeholder(R.drawable.grey_placeholder).into(imageView);
+                Picasso.with(this).load(user.getProfilePictureUrl()).memoryPolicy(MemoryPolicy.NO_CACHE).networkPolicy(NetworkPolicy.NO_CACHE).noFade().placeholder(R.drawable.grey_placeholder).into(imageView);
             }
 
         } else {
@@ -325,23 +375,29 @@ public class VenueActivity extends AppCompatActivity implements View.OnClickList
 
     @Subscribe
     public void OnSimilarVenuesLoaded(final SimilarVenuesLoadedEvent event){
-        //Populate similar venues
-        LinearLayout lvVenues = (LinearLayout)findViewById(R.id.similar_places_listview);
-        LayoutInflater liVenues = LayoutInflater.from(this);
+        if(!similarVenuesSent){
+            //Populate similar venues
+            LinearLayout lvVenues = (LinearLayout)findViewById(R.id.similar_places_listview);
+            LayoutInflater liVenues = LayoutInflater.from(this);
 
-        CompactVenue[] venues = event.getResponse().getResponse().getSimilarVenues().getItems();
-        for(int i = 0; i < 4; i++){
-            View viewText = liVenues.inflate(R.layout.tip_list_item, lvVenues, false);
-            TextView tv = (TextView) viewText.findViewById(R.id.tip_text);
-            tv.setText(venues[i].getName());
+            CompactVenue[] venues = event.getResponse().getResponse().getSimilarVenues().getItems();
+            int totalVenuesToDisplay = venues.length;
+            if(totalVenuesToDisplay > 4)
+                totalVenuesToDisplay = 4;
+            for(int i = 0; i < totalVenuesToDisplay; i++){
+                View viewText = liVenues.inflate(R.layout.similar_venue_list_item, lvVenues, false);
+                TextView tv = (TextView) viewText.findViewById(R.id.similar_venue_text);
+                tv.setText(venues[i].getName());
 
-            ImageView iv = (ImageView) viewText.findViewById(R.id.tip_profile_picture);
-            iv.setBackgroundColor(Color.rgb(43, 43, 46));
-            Picasso.with(this).load(venues[i].getCategories()[0].getIcon().getPrefix()+"88"+venues[i].getCategories()[0].getIcon().getSuffix()).placeholder(R.drawable.grey_placeholder_small).into(iv);
+                CircleImageView iv = (CircleImageView) viewText.findViewById(R.id.similar_venue_profile_picture);
+                Picasso.with(this).load(venues[i].getCategories()[0].getIcon().getPrefix()+"64"+venues[i].getCategories()[0].getIcon().getSuffix()).noFade().placeholder(R.drawable.grey_placeholder_small).into(iv);
 
-            lvVenues.addView(viewText);
+                lvVenues.addView(viewText);
 
+            }
+            similarVenuesSent = true;
         }
+
     }
 
     private Bus getBus() {
@@ -349,6 +405,16 @@ public class VenueActivity extends AppCompatActivity implements View.OnClickList
             mBus = BusProvider.getInstance();
         }
         return mBus;
+    }
+
+    public int dpToPx(int dp) {
+        DisplayMetrics displayMetrics = this.getResources().getDisplayMetrics();
+        return Math.round(dp * (displayMetrics.xdpi / DisplayMetrics.DENSITY_DEFAULT));
+    }
+
+    public int pxToDp(int px) {
+        DisplayMetrics displayMetrics = this.getResources().getDisplayMetrics();
+        return Math.round(px / (displayMetrics.xdpi / DisplayMetrics.DENSITY_DEFAULT));
     }
 
 }

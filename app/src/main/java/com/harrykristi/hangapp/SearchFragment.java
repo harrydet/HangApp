@@ -7,6 +7,7 @@ import android.content.pm.PackageManager;
 import android.location.Location;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.LinearLayoutManager;
@@ -52,8 +53,8 @@ import java.util.Date;
  * create an instance of this fragment.
  */
 public class SearchFragment extends Fragment implements AdapterView.OnItemSelectedListener, GoogleApiClient.ConnectionCallbacks,
-                                                        GoogleApiClient.OnConnectionFailedListener, com.google.android.gms.location.LocationListener,
-                                                        EndlessRecyclerViewAdapter.RequestToLoadMoreListener, RecyclerViewClickListener {
+        GoogleApiClient.OnConnectionFailedListener, com.google.android.gms.location.LocationListener,
+        EndlessRecyclerViewAdapter.RequestToLoadMoreListener, RecyclerViewClickListener {
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
@@ -222,7 +223,7 @@ public class SearchFragment extends Fragment implements AdapterView.OnItemSelect
     }
 
     @Override
-    public void onStart(){
+    public void onStart() {
         super.onStart();
         mGoogleApiClient.connect();
     }
@@ -245,7 +246,7 @@ public class SearchFragment extends Fragment implements AdapterView.OnItemSelect
     }
 
     @Override
-    public void onResume(){
+    public void onResume() {
         super.onResume();
         getBus().register(this);
     }
@@ -286,10 +287,10 @@ public class SearchFragment extends Fragment implements AdapterView.OnItemSelect
     }
 
     @Override
-    public void onActivityCreated(Bundle savedInstanceState){
+    public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
-        if(savedInstanceState != null){
+        if (savedInstanceState != null) {
             updateValuesFromBundle(savedInstanceState);
         }
     }
@@ -299,14 +300,14 @@ public class SearchFragment extends Fragment implements AdapterView.OnItemSelect
     public void onDataLoaded(DataLoadedVenueEvent event) {
         ProgressBar loadingSpinner = (ProgressBar) this.getView().findViewById(R.id.progress_spinner);
         loadingSpinner.setVisibility(View.INVISIBLE);
-        if(mAdapter.getItemCount() == 0 || event.getRefresh()){
+        if (mAdapter.getItemCount() == 0 || event.getRefresh()) {
             response = event.getResponse();
             mAdapter = new VenueCardAdapter(response, getContext(), this);
             endlessRecyclerViewAdapter = new EndlessRecyclerViewAdapter(getContext(), mAdapter, this);
             recyclerView.setAdapter(endlessRecyclerViewAdapter);
             animateResultsScreen();
         } else {
-            if(!loadMoreEventProcessed){
+            if (!loadMoreEventProcessed) {
                 loadMoreEventProcessed = true;
                 shouldLoadMore = response.extend(event.getResponse());
                 mAdapter.appendResponse(response);
@@ -333,6 +334,9 @@ public class SearchFragment extends Fragment implements AdapterView.OnItemSelect
 
     @Override
     public void onConnected(Bundle bundle) {
+        if (ActivityCompat.checkSelfPermission(getActivity(), android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getActivity(), android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            startLocationUpdates();
+        }
         mLastLocation = LocationServices.FusedLocationApi.getLastLocation(
                 mGoogleApiClient);
 
@@ -364,14 +368,14 @@ public class SearchFragment extends Fragment implements AdapterView.OnItemSelect
         final int radius = radi[rightSpinner.getSelectedItemPosition()];
         mOffset = response.getTotalVenues();
         loadMoreEventProcessed = false;
-        new AsyncTask<Void, Void, Response>(){
+        new AsyncTask<Void, Void, Response>() {
             @Override
-            protected Response doInBackground(Void... params){
-                try{
+            protected Response doInBackground(Void... params) {
+                try {
                     Thread.sleep(1000);
                     getBus().post(new LoadVenuesEvent(LoadVenuesEvent.FOURSQUARE, String.valueOf(mLastLocation.getLatitude()), String.valueOf(mLastLocation.getLongitude()),
                             terms, true, radius, mOffset, false));
-                } catch (InterruptedException e){
+                } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
 
@@ -379,11 +383,11 @@ public class SearchFragment extends Fragment implements AdapterView.OnItemSelect
             }
 
             @Override
-            protected void onPostExecute(Response response){
+            protected void onPostExecute(Response response) {
                 //mAdapter.appendResponse(response);
-                if(!shouldLoadMore){
+                if (!shouldLoadMore) {
                     endlessRecyclerViewAdapter.onDataReady(false);
-                }else{
+                } else {
                     endlessRecyclerViewAdapter.onDataReady(true);
                 }
             }
@@ -412,8 +416,8 @@ public class SearchFragment extends Fragment implements AdapterView.OnItemSelect
     protected void startLocationUpdates() {
         int permissionCheck = ContextCompat.checkSelfPermission(getActivity(),
                 Manifest.permission.ACCESS_FINE_LOCATION);
-        if(permissionCheck != PackageManager.PERMISSION_GRANTED){
-            if(shouldShowRequestPermissionRationale(Manifest.permission.ACCESS_FINE_LOCATION)){
+        if (permissionCheck != PackageManager.PERMISSION_GRANTED) {
+            if (shouldShowRequestPermissionRationale(Manifest.permission.ACCESS_FINE_LOCATION)) {
                 requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
                         MY_PERMISSIONS_REQUEST_FINE_LOCATION);
             } else {
@@ -450,7 +454,7 @@ public class SearchFragment extends Fragment implements AdapterView.OnItemSelect
         mBus = bus;
     }
 
-    private void animateResultsScreen(){
+    private void animateResultsScreen() {
 
         recyclerView.setVisibility(View.VISIBLE);
         recyclerView.setAlpha(0f);
@@ -471,7 +475,7 @@ public class SearchFragment extends Fragment implements AdapterView.OnItemSelect
                 });
     }
 
-    private void animateSearchScreen(){
+    private void animateSearchScreen() {
 
         initialView.setVisibility(View.VISIBLE);
         initialView.setAlpha(0f);
@@ -493,10 +497,13 @@ public class SearchFragment extends Fragment implements AdapterView.OnItemSelect
     }
 
     @Override
-    public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults){
-        switch (requestCode){
+    public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults) {
+        switch (requestCode) {
             case MY_PERMISSIONS_REQUEST_FINE_LOCATION: {
-                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED){
+                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    if (ActivityCompat.checkSelfPermission(getActivity(), android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getActivity(), android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                        startLocationUpdates();
+                    }
                     LocationServices.FusedLocationApi.requestLocationUpdates(
                             mGoogleApiClient, mLocationRequest, this);
                 } else {

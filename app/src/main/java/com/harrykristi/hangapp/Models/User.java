@@ -10,7 +10,7 @@ public class User {
     private String last_name;
     private int total_check_ins;
     private int total_matches;
-    private String profile_picture_url;
+    private String profilePictureUrl;
     private List<User> user_matches;
 
     public User RandomBuilder(){
@@ -82,5 +82,9 @@ public class User {
 
     public void setObject_id(String object_id) {
         this.object_id = object_id;
+    }
+
+    public String getProfilePictureUrl() {
+        return profilePictureUrl;
     }
 }
