@@ -4,7 +4,6 @@ import android.app.IntentService;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
-import android.provider.DocumentsContract;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 import android.widget.Toast;
@@ -20,7 +19,7 @@ import com.google.android.gms.iid.InstanceID;
 import com.harrykristi.hangapp.R;
 import com.harrykristi.hangapp.RootApplication;
 import com.harrykristi.hangapp.helpers.Config;
-import com.harrykristi.hangapp.interfaces.EndPoints;
+import com.harrykristi.hangapp.Interfaces.EndPoints;
 import com.harrykristi.hangapp.model.User;
 
 import org.json.JSONException;

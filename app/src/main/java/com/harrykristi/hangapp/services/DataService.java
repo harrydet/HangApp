@@ -1,6 +1,6 @@
 package com.harrykristi.hangapp.services;
 
-import com.harrykristi.hangapp.interfaces.HangAppAPI;
+import com.harrykristi.hangapp.Interfaces.HangAppAPI;
 import com.harrykristi.hangapp.model.ResponseUserSearching;
 import com.harrykristi.hangapp.model.SimilarVenuesResponse;
 import com.harrykristi.hangapp.model.UserProfileResponse;
@@ -14,7 +14,7 @@ import com.harrykristi.hangapp.events.LoadPreviousMatchesEvent;
 import com.harrykristi.hangapp.events.LoadSimilarVenuesEvent;
 import com.harrykristi.hangapp.events.LoadSpecificVenueEvent;
 import com.harrykristi.hangapp.events.LoadVenuesEvent;
-import com.harrykristi.hangapp.interfaces.FoursquareAPI;
+import com.harrykristi.hangapp.Interfaces.FoursquareAPI;
 import com.harrykristi.hangapp.events.RegisterUserEvent;
 import com.harrykristi.hangapp.events.ResponseUserSearchingEvent;
 import com.harrykristi.hangapp.events.SimilarVenuesLoadedEvent;

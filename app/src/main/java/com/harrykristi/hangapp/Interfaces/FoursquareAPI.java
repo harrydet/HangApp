@@ -1,9 +1,8 @@
 package com.harrykristi.hangapp.Interfaces;
 
 
-import com.harrykristi.hangapp.Models.FoursquareResponse;
-import com.harrykristi.hangapp.Models.SimilarVenuesResponse;
-import com.harrykristi.hangapp.events.SimilarVenuesLoadedEvent;
+import com.harrykristi.hangapp.model.FoursquareResponse;
+import com.harrykristi.hangapp.model.SimilarVenuesResponse;
 
 import retrofit.Callback;
 import retrofit.http.GET;

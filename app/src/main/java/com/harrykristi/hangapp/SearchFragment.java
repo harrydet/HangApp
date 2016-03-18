@@ -30,7 +30,7 @@ import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
 import com.harrykristi.hangapp.Adapters.VenueCardAdapter;
-import com.harrykristi.hangapp.interfaces.RecyclerViewClickListener;
+import com.harrykristi.hangapp.Interfaces.RecyclerViewClickListener;
 import com.harrykristi.hangapp.events.DataLoadedVenueEvent;
 import com.harrykristi.hangapp.events.LoadVenuesEvent;
 import com.harrykristi.hangapp.helpers.BusProvider;

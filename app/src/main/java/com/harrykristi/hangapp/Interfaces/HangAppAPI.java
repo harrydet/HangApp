@@ -1,11 +1,8 @@
 package com.harrykristi.hangapp.Interfaces;
 
-import android.telecom.Call;
-
-import com.harrykristi.hangapp.Models.ResponseUserSearching;
-import com.harrykristi.hangapp.Models.UserProfileResponse;
-import com.harrykristi.hangapp.Models.HangAppResponse;
-import com.harrykristi.hangapp.events.ResponseUserSearchingEvent;
+import com.harrykristi.hangapp.model.ResponseUserSearching;
+import com.harrykristi.hangapp.model.UserProfileResponse;
+import com.harrykristi.hangapp.model.HangAppResponse;
 
 import retrofit.Callback;
 import retrofit.http.Field;

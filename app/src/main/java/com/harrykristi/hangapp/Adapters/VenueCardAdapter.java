@@ -9,7 +9,7 @@ import android.view.ViewGroup;
 import android.widget.RatingBar;
 import android.widget.TextView;
 
-import com.harrykristi.hangapp.interfaces.RecyclerViewClickListener;
+import com.harrykristi.hangapp.Interfaces.RecyclerViewClickListener;
 import com.harrykristi.hangapp.R;
 import com.harrykristi.hangapp.model.Response;
 import com.squareup.picasso.Picasso;

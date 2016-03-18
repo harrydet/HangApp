@@ -26,7 +26,7 @@ import android.widget.Toast;
 
 import com.harrykristi.hangapp.Adapters.ProfileDialogAdapter;
 import com.harrykristi.hangapp.Adapters.ProfileListAdapter;
-import com.harrykristi.hangapp.interfaces.AuthenticatedActivityCallbacks;
+import com.harrykristi.hangapp.Interfaces.AuthenticatedActivityCallbacks;
 import com.harrykristi.hangapp.model.UserProfileResponse;
 import com.harrykristi.hangapp.model.VenueHangApp;
 import com.harrykristi.hangapp.events.DataLoadedPreviousMatchesEvent;

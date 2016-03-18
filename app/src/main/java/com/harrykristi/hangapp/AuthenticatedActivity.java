@@ -27,7 +27,7 @@ import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
-import com.harrykristi.hangapp.interfaces.AuthenticatedActivityCallbacks;
+import com.harrykristi.hangapp.Interfaces.AuthenticatedActivityCallbacks;
 import com.harrykristi.hangapp.model.UserProfileResponse;
 import com.harrykristi.hangapp.model.VenueFoursquare;
 import com.harrykristi.hangapp.events.DataLoadedUserEvent;
