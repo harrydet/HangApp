@@ -1,12 +1,17 @@
 package com.harrykristi.hangapp;
 
 import android.app.Application;
+import android.content.Intent;
+import android.text.TextUtils;
 import android.widget.Toast;
 
-import com.harrykristi.hangapp.Interfaces.HangAppAPI;
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.toolbox.Volley;
+import com.harrykristi.hangapp.interfaces.HangAppAPI;
 import com.harrykristi.hangapp.events.ApiErrorEvent;
 import com.harrykristi.hangapp.helpers.BusProvider;
-import com.harrykristi.hangapp.Interfaces.FoursquareAPI;
+import com.harrykristi.hangapp.interfaces.FoursquareAPI;
 import com.harrykristi.hangapp.helpers.HangAppPreferenceManager;
 import com.harrykristi.hangapp.services.DataService;
 import com.parse.Parse;
@@ -25,6 +30,8 @@ public class RootApplication extends Application {
 
     public static final String TAG = RootApplication.class
             .getSimpleName();
+
+    private RequestQueue mRequestQueue;
 
     private static RootApplication mInstance;
 
@@ -59,12 +66,43 @@ public class RootApplication extends Application {
         return mInstance;
     }
 
+    public RequestQueue getmRequestQueue(){
+        if (mRequestQueue == null){
+            mRequestQueue = Volley.newRequestQueue(getApplicationContext());
+        }
+
+        return mRequestQueue;
+    }
+
     public HangAppPreferenceManager getPrefManager(){
         if (pref == null){
             pref = new HangAppPreferenceManager(this);
         }
 
         return pref;
+    }
+
+    public <T> void addToRequestQueue(Request<T> req, String tag){
+        req.setTag(TextUtils.isEmpty(tag) ? TAG : tag);
+        getmRequestQueue().add(req);
+    }
+
+    public <T> void addToRequestQueue(Request<T> req){
+        req.setTag(TAG);
+        getmRequestQueue().add(req);
+    }
+
+    public void cancelPendingRequests(Object tag){
+        if(mRequestQueue != null){
+            mRequestQueue.cancelAll(tag);
+        }
+    }
+
+    public void logout(){
+        pref.clear();
+        Intent intent = new Intent(this, LoginActivity.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        startActivity(intent);
     }
 
     private HangAppAPI buildHangAppApi() {

@@ -1,7 +1,7 @@
 package com.harrykristi.hangapp.events;
 
 
-import com.harrykristi.hangapp.Models.FoursquareResponse;
+import com.harrykristi.hangapp.model.FoursquareResponse;
 
 import retrofit.client.Response;
 

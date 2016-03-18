@@ -1,8 +1,7 @@
-package com.harrykristi.hangapp.Models;
+package com.harrykristi.hangapp.model;
 
 import java.util.List;
 
-import fi.foyt.foursquare.api.entities.CompleteTip;
 import fi.foyt.foursquare.api.entities.HereNow;
 
 

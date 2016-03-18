@@ -1,6 +1,6 @@
 package com.harrykristi.hangapp.events;
 
-import com.harrykristi.hangapp.Models.UserProfileResponse;
+import com.harrykristi.hangapp.model.UserProfileResponse;
 
 
 public class DataLoadedUserEvent {

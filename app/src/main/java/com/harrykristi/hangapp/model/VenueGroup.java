@@ -1,4 +1,4 @@
-package com.harrykristi.hangapp.Models;
+package com.harrykristi.hangapp.model;
 
 
 public class VenueGroup{

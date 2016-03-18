@@ -1,6 +1,6 @@
 package com.harrykristi.hangapp.events;
 
-import com.harrykristi.hangapp.Models.HangAppResponse;
+import com.harrykristi.hangapp.model.HangAppResponse;
 
 public class UserRegisteredResponseEvent {
     HangAppResponse response;

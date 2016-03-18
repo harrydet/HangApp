@@ -1,6 +1,6 @@
 package com.harrykristi.hangapp.events;
 
-import com.harrykristi.hangapp.Models.FoursquareResponse;
+import com.harrykristi.hangapp.model.FoursquareResponse;
 
 import retrofit.client.Response;
 
@@ -23,6 +23,6 @@ public class DataLoadedVenueEvent {
 
     public String getData() { return mData;}
     public FoursquareResponse getFoursquareResponseResponse(){ return mFoursquareResponse;}
-    public com.harrykristi.hangapp.Models.Response getResponse(){ return mFoursquareResponse.getResponse();}
+    public com.harrykristi.hangapp.model.Response getResponse(){ return mFoursquareResponse.getResponse();}
 
 }

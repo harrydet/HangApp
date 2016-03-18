@@ -1,7 +1,7 @@
 package com.harrykristi.hangapp.events;
 
 
-import com.harrykristi.hangapp.Models.SimilarVenuesResponse;
+import com.harrykristi.hangapp.model.SimilarVenuesResponse;
 
 public class SimilarVenuesLoadedEvent {
     SimilarVenuesResponse response;

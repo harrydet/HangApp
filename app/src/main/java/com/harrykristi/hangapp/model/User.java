@@ -1,13 +1,16 @@
-package com.harrykristi.hangapp.Models;
+package com.harrykristi.hangapp.model;
 
+import java.io.Serializable;
 import java.util.List;
 
 
-public class User {
+public class User implements Serializable{
+    String id;
     String object_id;
     private String user_name;
     private String first_name;
     private String last_name;
+    private String email;
     private int total_check_ins;
     private int total_matches;
     private String profilePictureUrl;
@@ -26,6 +29,25 @@ public class User {
 
         return stub;
 
+    }
+
+    public User(){
+
+    }
+
+    public User(String id, String first_name, String last_name, String email){
+        this.id = id;
+        this.first_name = first_name;
+        this.last_name = last_name;
+        this.email = email;
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
     }
 
     public String getUser_name() {
@@ -50,6 +72,14 @@ public class User {
 
     public void setLast_name(String last_name) {
         this.last_name = last_name;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
     }
 
     public int getTotal_check_ins() {

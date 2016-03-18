@@ -8,13 +8,11 @@ import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.harrykristi.hangapp.Models.TipVenue;
+import com.harrykristi.hangapp.model.TipVenue;
 import com.harrykristi.hangapp.R;
 import com.squareup.picasso.Picasso;
 
 import java.util.List;
-
-import fi.foyt.foursquare.api.entities.CompleteTip;
 
 
 public class TipCardArrayAdapter extends BaseAdapter {

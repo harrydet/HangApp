@@ -1,7 +1,6 @@
 package com.harrykristi.hangapp;
 
 import android.content.Intent;
-import android.graphics.Color;
 import android.net.Uri;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.ActionBar;
@@ -14,21 +13,16 @@ import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.ListView;
 import android.widget.RatingBar;
-import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.harrykristi.hangapp.Adapters.TipCardArrayAdapter;
-import com.harrykristi.hangapp.Models.CompactVenue;
-import com.harrykristi.hangapp.Models.TipVenue;
-import com.harrykristi.hangapp.Models.User;
-import com.harrykristi.hangapp.Models.UserProfileResponse;
-import com.harrykristi.hangapp.Models.VenueFoursquare;
+import com.harrykristi.hangapp.model.CompactVenue;
+import com.harrykristi.hangapp.model.TipVenue;
+import com.harrykristi.hangapp.model.User;
+import com.harrykristi.hangapp.model.UserProfileResponse;
 import com.harrykristi.hangapp.events.DataLoadedPreviousMatchesEvent;
 import com.harrykristi.hangapp.events.DataLoadedSpecificVenue;
 import com.harrykristi.hangapp.events.LoadPreviousMatchesEvent;
@@ -47,8 +41,6 @@ import com.squareup.otto.Subscribe;
 import com.squareup.picasso.MemoryPolicy;
 import com.squareup.picasso.NetworkPolicy;
 import com.squareup.picasso.Picasso;
-
-import org.w3c.dom.Text;
 
 import java.util.List;
 import java.util.Locale;

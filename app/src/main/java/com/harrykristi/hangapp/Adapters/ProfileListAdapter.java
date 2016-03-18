@@ -8,9 +8,9 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.TextView;
 
-import com.harrykristi.hangapp.Models.VenueHangApp;
+import com.harrykristi.hangapp.model.VenueHangApp;
 import com.harrykristi.hangapp.R;
-import com.harrykristi.hangapp.Models.User;
+import com.harrykristi.hangapp.model.User;
 import com.squareup.picasso.Picasso;
 
 import java.util.List;

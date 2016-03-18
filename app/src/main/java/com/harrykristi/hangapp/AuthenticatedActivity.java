@@ -1,13 +1,18 @@
 package com.harrykristi.hangapp;
 
 import android.app.ActivityOptions;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.Snackbar;
+import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.ActionBar;
+import android.util.Log;
 import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -20,12 +25,16 @@ import android.view.MenuItem;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.harrykristi.hangapp.Interfaces.AuthenticatedActivityCallbacks;
-import com.harrykristi.hangapp.Models.UserProfileResponse;
-import com.harrykristi.hangapp.Models.VenueFoursquare;
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.GoogleApiAvailability;
+import com.harrykristi.hangapp.interfaces.AuthenticatedActivityCallbacks;
+import com.harrykristi.hangapp.model.UserProfileResponse;
+import com.harrykristi.hangapp.model.VenueFoursquare;
 import com.harrykristi.hangapp.events.DataLoadedUserEvent;
 import com.harrykristi.hangapp.events.GetUserPictureEvent;
+import com.harrykristi.hangapp.gcm.GcmIntentService;
 import com.harrykristi.hangapp.helpers.BusProvider;
+import com.harrykristi.hangapp.helpers.Config;
 import com.parse.ParseUser;
 import com.squareup.otto.Bus;
 import com.squareup.otto.Subscribe;
@@ -43,6 +52,10 @@ public class AuthenticatedActivity extends AppCompatActivity
     private static final String ARG_VENUEID = "param_venueId";
     private static final String ARG_VENUE_NAME = "param_venueName";
     private static final String ARG_VENUE_RATING = "param_rating";
+
+    private String TAG = AuthenticatedActivity.class.getSimpleName();
+    private static final int PLAY_SERVICES_RESOLUTION_REQUEST = 9000;
+    private BroadcastReceiver mRegistrationBroadcastReceiver;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -82,6 +95,73 @@ public class AuthenticatedActivity extends AppCompatActivity
         ft.commit();
 
         coordinatorLayout = (CoordinatorLayout) findViewById(R.id.coordinator_layout);
+
+        mRegistrationBroadcastReceiver = new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                // Check for type of intent filter
+                if (intent.getAction().equals(Config.REGISTRATION_COMPLETE)) {
+                    // GCM successfully registered, subscribe to global topic for notifications
+                    String token = intent.getStringExtra("token");
+
+                    Toast.makeText(getApplicationContext(), "GCM Token: " + token, Toast.LENGTH_LONG).show();
+
+                } else if (intent.getAction().equals(Config.SENT_TOKEN_TO_SERVER)) {
+                    // GCM registration id is stored in server
+                    Toast.makeText(getApplicationContext(), "GCM on server", Toast.LENGTH_LONG).show();
+                } else if (intent.getAction().equals(Config.PUSH_NOTIFICATION)){
+                    // Push notification is received
+                    Toast.makeText(getApplicationContext(), "Push notification received", Toast.LENGTH_LONG).show();
+                }
+            }
+        };
+
+        if(checkPlayServices()) {
+            registerGCM();
+        }
+    }
+
+    @Override
+    protected void onResume(){
+        super.onResume();
+
+        // Register complete receiver
+        LocalBroadcastManager.getInstance(this).registerReceiver(mRegistrationBroadcastReceiver,
+                new IntentFilter(Config.REGISTRATION_COMPLETE));
+
+        // Register new push message receiver
+        LocalBroadcastManager.getInstance(this).registerReceiver(mRegistrationBroadcastReceiver,
+                new IntentFilter(Config.PUSH_NOTIFICATION));
+    }
+
+    @Override
+    protected void onPause(){
+        LocalBroadcastManager.getInstance(this).unregisterReceiver(mRegistrationBroadcastReceiver);
+        super.onPause();
+    }
+
+    // Register with the GCM service
+    private void registerGCM(){
+        Intent intent = new Intent(this, GcmIntentService.class);
+        intent.putExtra("key", "register");
+        startService(intent);
+    }
+
+    private boolean checkPlayServices(){
+        GoogleApiAvailability apiAvailability = GoogleApiAvailability.getInstance();
+        int resultCode = apiAvailability.isGooglePlayServicesAvailable(this);
+        if (resultCode != ConnectionResult.SUCCESS){
+            if (apiAvailability.isUserResolvableError(resultCode)){
+                apiAvailability.getErrorDialog(this, resultCode, PLAY_SERVICES_RESOLUTION_REQUEST)
+                        .show();
+            } else {
+                Log.i(TAG, "This device is not supported. Google play services are not installed");
+                Toast.makeText(getApplicationContext(), "This device is not supported. Google play services are not installed", Toast.LENGTH_LONG).show();
+                finish();
+            }
+            return false;
+        }
+        return true;
     }
 
     @Override
@@ -135,6 +215,7 @@ public class AuthenticatedActivity extends AppCompatActivity
                 ft.replace(R.id.fragment_layout, ProfileFragment.newInstance("a", "b"));
                 break;
             case R.id.nav_messages:
+                ft.replace(R.id.fragment_layout, MessagesFragment.newInstance("a", "b"));
                 break;
             case R.id.nav_account:
                 break;

@@ -1,7 +1,5 @@
-package com.harrykristi.hangapp.Models;
+package com.harrykristi.hangapp.model;
 
-
-import com.harrykristi.hangapp.Models.User;
 
 import java.util.List;
 

@@ -1,4 +1,4 @@
-package com.harrykristi.hangapp.Models;
+package com.harrykristi.hangapp.model;
 
 /**
  * Created by Harry on 2/17/2016.
