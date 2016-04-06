@@ -25,8 +25,8 @@ public interface HangAppAPI {
                                     @Field("first_name") String first_name,
                                     @Field("last_name") String last_name,
                                     Callback<HangAppResponse> callback);
-    @GET("/users/{object_id}")
-    public void fetchUserWithParams(@Path("object_id") String object_id,
+    @GET("/users/{id}")
+    public void fetchUserWithParams(@Path("id") String id,
                                     @Query("profilePictureUrl") boolean profilePicture,
                                     Callback<UserProfileResponse> callback);
 

@@ -16,6 +16,11 @@ public class User implements Serializable{
     private String profilePictureUrl;
     private List<User> user_matches;
 
+    public User(String userId, String userName) {
+        this.user_name = userName;
+        this.id = userId;
+    }
+
     public User RandomBuilder(){
         User stub = new User();
         stub.setUser_name("testusername");

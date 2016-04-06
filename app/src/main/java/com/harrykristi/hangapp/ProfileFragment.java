@@ -95,6 +95,8 @@ public class ProfileFragment extends Fragment {
     private Bus mBus;
     private int mAnimationDuration;
 
+    private User user;
+
     private AuthenticatedActivityCallbacks callbacks;
     private Activity mActivity;
 
@@ -124,8 +126,13 @@ public class ProfileFragment extends Fragment {
         mDatasetUser = null;
         mDatasetVenue = null;
 
+        // Check for active login, redirect to login activity if none
+        if ((user = RootApplication.getmInstance().getPrefManager().getUser()) == null){
+
+        }
+
         getBus().register(this);
-        getBus().post(new LoadPreviousMatchesEvent(ParseUser.getCurrentUser().getObjectId(), null));
+        getBus().post(new LoadPreviousMatchesEvent(user.getId(), null));
     }
 
     @Override

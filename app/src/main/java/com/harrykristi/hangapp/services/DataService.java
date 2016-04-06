@@ -116,9 +116,9 @@ public class DataService {
 
     @Subscribe
     public void onLoadData(final GetUserPictureEvent event){
-        String objectId = event.getObjectId();
+        String id = event.getId();
 
-        mHangAppApi.fetchUserWithParams(objectId,
+        mHangAppApi.fetchUserWithParams(id,
                 true,
                 new Callback<UserProfileResponse>() {
                     @Override

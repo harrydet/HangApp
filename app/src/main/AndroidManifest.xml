@@ -14,7 +14,6 @@
     <uses-permission android:name="android.permission.CAMERA" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
-
     !-- needed for older devices -
     used to check app background / foreground status -->
     <uses-permission android:name="android.permission.GET_TASKS" />
@@ -31,8 +30,8 @@
     <permission
         android:name="android.permission.READ_EXTERNAL_STORAGE"
         android:protectionLevel="dangerous" />
-
-    <permission android:name="com.harrykristi.hangapp.permission.C2D_MESSAGE"
+    <permission
+        android:name="com.harrykristi.hangapp.permission.C2D_MESSAGE"
         android:protectionLevel="signature" />
 
     <uses-permission android:name="com.harrykristi.hangapp.permission.C2D_MESSAGE" />
@@ -42,8 +41,8 @@
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
-        android:theme="@style/AppTheme"
-        android:largeHeap="true">
+        android:largeHeap="true"
+        android:theme="@style/AppTheme">
         <meta-data
             android:name="com.parse.APPLICATION_ID"
             android:value="@string/parse_app_id" />
@@ -58,7 +57,7 @@
             android:name=".LoginActivity"
             android:label="@string/app_name"
             android:theme="@style/Theme.AppCompat.NoActionBar"
-            android:windowSoftInputMode="adjustResize"></activity>
+            android:windowSoftInputMode="adjustResize" />
         <activity
             android:name=".SignUpActivity"
             android:label="@string/title_activity_sign_up"
@@ -95,8 +94,8 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-
-        <activity android:name=".FullScreenViewActivity"
+        <activity
+            android:name=".FullScreenViewActivity"
             android:label="FullScreenActivity"
             android:parentActivityName=".VenueActivity"
             android:theme="@style/AppTheme.NoActionBar"
@@ -104,14 +103,21 @@
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".VenueActivity" />
-
         </activity>
-
+        <activity
+            android:name=".ChatRoomActivity"
+            android:label="@string/title_activity_chat_room"
+            android:parentActivityName=".AuthenticatedActivity"
+            android:theme="@style/AppTheme.NoActionBar">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.harrykristi.hangapp.AuthenticatedActivity" />
+        </activity>
 
         <service android:name="com.parse.PushService" />
 
         <receiver
-            android:name="com.harrykristi.hangapp.helpers.ExtendedPushReceiver"
+            android:name=".helpers.ExtendedPushReceiver"
             android:exported="false">
             <intent-filter>
                 <action android:name="com.parse.push.intent.RECEIVE" />
@@ -150,7 +156,6 @@
                 <action android:name="com.google.android.c2dm.intent.RECEIVE" />
             </intent-filter>
         </service>
-
         <service
             android:name=".gcm.GcmIntentService"
             android:exported="false">

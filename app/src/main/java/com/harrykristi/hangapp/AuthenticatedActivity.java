@@ -10,6 +10,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.Snackbar;
+import android.support.v4.app.Fragment;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.ActionBar;
 import android.util.Log;
@@ -28,6 +29,7 @@ import android.widget.Toast;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
 import com.harrykristi.hangapp.Interfaces.AuthenticatedActivityCallbacks;
+import com.harrykristi.hangapp.model.User;
 import com.harrykristi.hangapp.model.UserProfileResponse;
 import com.harrykristi.hangapp.model.VenueFoursquare;
 import com.harrykristi.hangapp.events.DataLoadedUserEvent;
@@ -53,6 +55,9 @@ public class AuthenticatedActivity extends AppCompatActivity
     private static final String ARG_VENUE_NAME = "param_venueName";
     private static final String ARG_VENUE_RATING = "param_rating";
 
+    // User - The current user
+    User user;
+
     private String TAG = AuthenticatedActivity.class.getSimpleName();
     private static final int PLAY_SERVICES_RESOLUTION_REQUEST = 9000;
     private BroadcastReceiver mRegistrationBroadcastReceiver;
@@ -63,6 +68,11 @@ public class AuthenticatedActivity extends AppCompatActivity
         setContentView(R.layout.activity_authenticated);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+
+        // Check for active login, redirect to login activity if none
+        if ((user = RootApplication.getmInstance().getPrefManager().getUser()) == null){
+            launchLoginActivity();
+        }
 
         ActionBar actionBar = getSupportActionBar();
         if (actionBar != null) {
@@ -85,10 +95,10 @@ public class AuthenticatedActivity extends AppCompatActivity
         TextView userEmail = (TextView) headerView.findViewById(R.id.header_user_email);
         userProfilePicture = (CircleImageView) headerView.findViewById(R.id.header_profile_picture);
         getBus().register(this);
-        getBus().post(new GetUserPictureEvent(ParseUser.getCurrentUser().getObjectId()));
+        getBus().post(new GetUserPictureEvent(user.getId()));
 
-        userName.setText(ParseUser.getCurrentUser().get("Full_Name").toString());
-        userEmail.setText(ParseUser.getCurrentUser().getEmail());
+        userName.setText(user.getFirst_name() + user.getLast_name());
+        userEmail.setText(user.getEmail());
 
         android.support.v4.app.FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
         ft.replace(R.id.fragment_layout, SearchFragment.newInstance("a", "b"));
@@ -111,7 +121,12 @@ public class AuthenticatedActivity extends AppCompatActivity
                     Toast.makeText(getApplicationContext(), "GCM on server", Toast.LENGTH_LONG).show();
                 } else if (intent.getAction().equals(Config.PUSH_NOTIFICATION)){
                     // Push notification is received
-                    Toast.makeText(getApplicationContext(), "Push notification received", Toast.LENGTH_LONG).show();
+                    Fragment currentFragment = getSupportFragmentManager().findFragmentById(R.id.fragment_layout);
+                    if(currentFragment instanceof MessagesFragment) {
+                        MessagesFragment messagesFragment = (MessagesFragment) currentFragment;
+                        messagesFragment.handlePushNotification(intent);
+                        Toast.makeText(getApplicationContext(), "Push notification received", Toast.LENGTH_LONG).show();
+                    }
                 }
             }
         };
@@ -303,11 +318,22 @@ public class AuthenticatedActivity extends AppCompatActivity
     @Override
     public void DisplaySnackBarWith(String message) {
         final Snackbar snackbar = Snackbar.make(coordinatorLayout, message, Snackbar.LENGTH_LONG);
-        snackbar.setAction("RETRY", new View.OnClickListener(){
+        snackbar.setAction("RETRY", new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 //launchUploadProcess(true);
             }
         });
+    }
+
+    private void launchLoginActivity() {
+        Intent intent = new Intent(AuthenticatedActivity.this, LoginActivity.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        startActivity(intent);
+        finish();
+    }
+
+    public BroadcastReceiver getmRegistrationBroadcastReceiver(){
+        return mRegistrationBroadcastReceiver;
     }
 }

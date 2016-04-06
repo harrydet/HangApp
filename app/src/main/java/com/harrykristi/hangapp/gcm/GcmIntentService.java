@@ -29,9 +29,6 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
-/**
- * Created by Harry on 3/13/2016.
- */
 public class GcmIntentService extends IntentService {
 
     private static final String TAG = GcmIntentService.class.getSimpleName();
@@ -99,7 +96,7 @@ public class GcmIntentService extends IntentService {
             return;
         }
 
-        String endPoint = EndPoints.USER.replace("_ID_", user.getId());
+        String endPoint = EndPoints.USER_GCM.replace("_ID_", user.getId());
 
         Log.e(TAG, "endpoint: " + endPoint);
 

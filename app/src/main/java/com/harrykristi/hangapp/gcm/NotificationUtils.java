@@ -33,9 +33,6 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
-/**
- * Created by Harry on 3/13/2016.
- */
 public class NotificationUtils {
     private static String TAG = NotificationUtils.class.getSimpleName();
 
@@ -60,7 +57,7 @@ public class NotificationUtils {
             return;
 
         // Notification icon
-        final int icon = R.mipmap.ic_launcher;
+        final int icon = R.drawable.ic_fob_drink;
 
         intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
         final PendingIntent resultPendingIntent = PendingIntent.getActivity(
@@ -103,7 +100,7 @@ public class NotificationUtils {
 
             List<String> messages = Arrays.asList(oldNotifications.split("\\|"));
 
-            for (int i = messages.size(); i >= 0; i--){
+            for (int i = messages.size() - 1; i >= 0; i--){
                 inboxStyle.addLine(messages.get(i));
             }
         } else {
@@ -119,7 +116,7 @@ public class NotificationUtils {
                 .setSound(alarmSound)
                 .setStyle(inboxStyle)
                 .setWhen(getTimeMilliSec(timeStamp))
-                .setSmallIcon(R.mipmap.ic_launcher)
+                .setSmallIcon(R.drawable.ic_fob_drink)
                 .setLargeIcon(BitmapFactory.decodeResource(mContext.getResources(), icon))
                 .setContentText(message)
                 .build();
@@ -142,7 +139,7 @@ public class NotificationUtils {
                 .setSound(alarmSound)
                 .setStyle(bigPictureStyle)
                 .setWhen(getTimeMilliSec(timeStamp))
-                .setSmallIcon(R.mipmap.ic_launcher)
+                .setSmallIcon(R.drawable.ic_fob_drink)
                 .setLargeIcon(BitmapFactory.decodeResource(mContext.getResources(), icon))
                 .setContentText(message)
                 .build();

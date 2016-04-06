@@ -73,12 +73,20 @@ public class VenueActivity extends AppCompatActivity implements View.OnClickList
     private boolean similarVenuesSent;
     private boolean tipsSent;
 
+    // User - The current user
+    User user;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_venue);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+
+        // Check for active login, redirect to login activity if none
+        if ((user = RootApplication.getmInstance().getPrefManager().getUser()) == null){
+            launchLoginActivity();
+        }
 
         similarVenuesSent = false;
         tipsSent = false;
@@ -145,7 +153,7 @@ public class VenueActivity extends AppCompatActivity implements View.OnClickList
             Log.d("Debug", "Bus already registered");
         }
         getBus().post(new LoadSpecificVenueEvent(venueId));
-        getBus().post(new LoadPreviousMatchesEvent(ParseUser.getCurrentUser().getObjectId(), venueId));
+        getBus().post(new LoadPreviousMatchesEvent(user.getId(), venueId));
         if(!similarVenuesSent){
             getBus().post(new LoadSimilarVenuesEvent(venueId));
         }
@@ -407,6 +415,13 @@ public class VenueActivity extends AppCompatActivity implements View.OnClickList
     public int pxToDp(int px) {
         DisplayMetrics displayMetrics = this.getResources().getDisplayMetrics();
         return Math.round(px / (displayMetrics.xdpi / DisplayMetrics.DENSITY_DEFAULT));
+    }
+
+    private void launchLoginActivity() {
+        Intent intent = new Intent(VenueActivity.this, LoginActivity.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        startActivity(intent);
+        finish();
     }
 
 }

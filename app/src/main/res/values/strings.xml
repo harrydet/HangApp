@@ -63,4 +63,13 @@
     <string name="tips_comments_card"><![CDATA[Tips & Comments:]]></string>
     <string name="user_profile_picture_accessibility">User profile picture</string>
     <string name="venue_activity_similar_places_string">Similar places</string>
+
+    <string name="title_activity_login">LoginActivity</string>
+    <string name="hint_name">Full Name</string>
+    <string name="hint_email">Email</string>
+    <string name="err_msg_name">Enter full name</string>
+    <string name="err_msg_email">Enter valid email address</string>
+    <string name="title_activity_chat_room_discussion">ChatRoomDiscussionActivity</string>
+    <string name="action_logout">Logout</string>
+    <string name="title_activity_chat_room">ChatRoomActivity</string>
 </resources>

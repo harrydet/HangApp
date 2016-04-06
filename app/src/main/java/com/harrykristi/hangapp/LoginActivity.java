@@ -5,16 +5,29 @@ import android.animation.AnimatorListenerAdapter;
 import android.content.Intent;
 import android.graphics.Typeface;
 import android.os.Bundle;
+import android.provider.DocumentsContract;
+import android.support.design.widget.TextInputLayout;
 import android.support.v7.app.AppCompatActivity;
+import android.text.Editable;
+import android.text.TextUtils;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.android.volley.NetworkResponse;
+import com.android.volley.Request;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.StringRequest;
+import com.harrykristi.hangapp.Interfaces.EndPoints;
+import com.harrykristi.hangapp.model.User;
 import com.parse.LogInCallback;
 import com.parse.ParseAnalytics;
 import com.harrykristi.hangapp.R;
@@ -24,42 +37,53 @@ import com.parse.ParseInstallation;
 import com.parse.ParsePush;
 import com.parse.ParseUser;
 
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.w3c.dom.Text;
 
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 
 
 public class LoginActivity extends AppCompatActivity implements View.OnClickListener{
-
-    private int mShortAnimationDuration;
-    private EditText userEmailEdit;
-    private EditText userPasswordEdit;
+    private String TAG = LoginActivity.class.getSimpleName();
+    private EditText inputName, inputEmail;
+    private TextInputLayout inputLayoutName, inputLayoutEmail;
+    private Button btnEnter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        //Default on Create stuff
         super.onCreate(savedInstanceState);
+
+        // Set the content view
         setContentView(R.layout.activity_login);
 
+        // Check for login session. Redirect to main activity if already logged in
+        if (RootApplication.getmInstance().getPrefManager().getUser() != null){
+            startActivity(new Intent(this, AuthenticatedActivity.class));
+            finish();
+        }
+
+        // Set the variables
+        inputLayoutName = (TextInputLayout) findViewById(R.id.input_layout_name);
+        inputLayoutEmail = (TextInputLayout) findViewById(R.id.input_layout_email);
+        inputName = (EditText) findViewById(R.id.input_name);
+        inputEmail = (EditText) findViewById(R.id.input_email);
+        btnEnter = (Button) findViewById(R.id.btn_enter);
+
+        // Set the fonts
         Typeface font = Typeface.createFromAsset(getAssets(), "fonts/MyriadPro-Light.otf");
+        inputName.setTypeface(font);
+        inputEmail.setTypeface(font);
+        btnEnter.setTypeface(font);
 
+        // On click listeners
+        btnEnter.setOnClickListener(this);
+
+        // Parse stuff
         ParseAnalytics.trackAppOpenedInBackground(getIntent());
-
-        mShortAnimationDuration = getResources().getInteger(android.R.integer.config_longAnimTime);
-
-        Button mButtonSignUp = (Button) findViewById(R.id.sign_up_button);
-        mButtonSignUp.setOnClickListener(this);
-
-        Button mButtonLoginFaded = (Button) findViewById(R.id.login_button_faded_in);
-        mButtonLoginFaded.setOnClickListener(this);
-
-        TextView forgotPassword = (TextView) findViewById(R.id.forgot_password_button);
-        forgotPassword.setOnClickListener(this);
-        forgotPassword.setTypeface(font);
-
-        userEmailEdit = (EditText) findViewById(R.id.user_email_login);
-        userEmailEdit.setTypeface(font);
-        userPasswordEdit = (EditText) findViewById(R.id.user_password_login);
-        userPasswordEdit.setTypeface(font);
     }
 
     @Override
@@ -95,17 +119,8 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     @Override
     public void onClick(View v) {
         switch (v.getId()){
-            case R.id.sign_up_button:
-                Intent signUpIntent = new Intent(this, SignUpActivity.class);
-                startActivity(signUpIntent);
-                break;
-            case R.id.login_button_faded_in:
+            case R.id.btn_enter:
                 loginUser();
-                break;
-            case R.id.facebook_login_button:
-                loginUserFacebook();
-                break;
-            case R.id.forgot_password_button:
                 break;
             default:
                 break;
@@ -113,81 +128,138 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     }
 
     public void loginUser(){
-        String email = userEmailEdit.getText().toString();
-        String password = userPasswordEdit.getText().toString();
+        // Front end form validation
+        if (!validateName()) {
+            return;
+        }
+        if (!validateName()) {
+            return;
+        }
 
-        ParseUser.logInInBackground(email.split("@")[0], password, new LogInCallback() {
+        final String first_name = inputName.getText().toString().split(" ")[0];
+        final String last_name = inputName.getText().toString().split(" ")[1];
+        final String email = inputEmail.getText().toString();
+
+        StringRequest stringRequest = new StringRequest(Request.Method.POST,
+                EndPoints.USER_LOGIN, new Response.Listener<String>() {
             @Override
-            public void done(ParseUser user, ParseException e) {
-                if (user != null) {
-                    ParseInstallation installation = ParseInstallation.getCurrentInstallation();
-                    //installation.put("objectId", ParseUser.getCurrentUser().getObjectId());
-                    installation.put("user", ParseUser.getCurrentUser());
-                    installation.saveInBackground();
-                    ParsePush.subscribeInBackground("user_" + ParseUser.getCurrentUser().getObjectId());
-                    Intent authenticatedIntent = new Intent(getApplicationContext(), AuthenticatedActivity.class);
-                    startActivity(authenticatedIntent);
-                } else {
-                    Toast.makeText(LoginActivity.this, "Failed to log in, try again.", Toast.LENGTH_SHORT).show();
+            public void onResponse(String response) {
+                Log.e(TAG, "response: " + response);
+
+                try {
+                    JSONObject obj = new JSONObject(response);
+
+                    // Check for error flags
+                    if (obj.getBoolean("error") == false){
+                        // User was logged in successfully
+                        JSONObject userObj = obj.getJSONObject("user");
+                        User user = new User(userObj.getString("user_id"),
+                                userObj.getString("first_name"),
+                                userObj.getString("last_name"),
+                                userObj.getString("email"));
+
+                        // Store the user in shared prefs
+                        RootApplication.getmInstance().getPrefManager().storeUser(user);
+
+                        // Start the authenticated activity
+                        startActivity(new Intent(getApplicationContext(), AuthenticatedActivity.class));
+                        finish();
+                    } else {
+                        // User was not logged in - toast
+                        Toast.makeText(LoginActivity.this, "" + obj.getString("message"), Toast.LENGTH_SHORT).show();
+                    }
+                } catch (JSONException ex) {
+                    Log.e(TAG, "Json parsing error: " + ex.getMessage());
+                    Toast.makeText(LoginActivity.this, "Json parsing error: " + ex.getMessage(), Toast.LENGTH_SHORT).show();
                 }
             }
-        });
-    }
-
-    public void loginUserFacebook(){
-        ParseFacebookUtils.logInWithReadPermissionsInBackground(this, null, new LogInCallback() {
+        }, new Response.ErrorListener() {
             @Override
-            public void done(ParseUser user, ParseException err) {
-                if (user == null) {
-                    Log.d("MyApp", "Uh oh. The user cancelled the Facebook login.");
-                } else if (user.isNew()) {
-                    Log.d("MyApp", "User signed up and logged in through Facebook!");
-                } else {
-                    Log.d("MyApp", "User logged in through Facebook!");
-                }
+            public void onErrorResponse(VolleyError error) {
+                NetworkResponse networkResponse = error.networkResponse;
+                Log.e(TAG, "Volley error: " + error.getMessage() + ", code: " + networkResponse);
+                Toast.makeText(getApplicationContext(), "Volley error: " + error.getMessage(), Toast.LENGTH_SHORT).show();
             }
-        });
+        }){
+            @Override
+        protected Map<String, String> getParams(){
+                Map<String, String> params = new HashMap<>();
+                params.put("name", first_name + last_name);
+                params.put("email", email);
+
+                Log.e(TAG, "params: " + params.toString());
+                return params;
+            }
+        };
+
+        // Add request to queue
+        RootApplication.getmInstance().addToRequestQueue(stringRequest);
     }
 
-    /*private void animateLoginScreen(){
-
-        mFieldView.setVisibility(View.VISIBLE);
-        mFieldView.setAlpha(0f);
-
-        mFieldView.animate()
-                .alpha(1f)
-                .setDuration(mShortAnimationDuration)
-                .setListener(null);
-
-        mButtonView.animate()
-                .alpha(0f)
-                .setDuration(mShortAnimationDuration)
-                .setListener(new AnimatorListenerAdapter() {
-                    @Override
-                    public void onAnimationEnd(Animator animation) {
-                        mButtonView.setVisibility(View.GONE);
-                    }
-                });
+    private void requestFocus(View view) {
+        if (view.requestFocus()) {
+            getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_VISIBLE);
+        }
     }
 
-    private void animateLoginScreenReverse(){
+    // Validating name
+    private boolean validateName() {
+        if (inputName.getText().toString().trim().isEmpty()) {
+            inputLayoutName.setError(getString(R.string.err_msg_name));
+            requestFocus(inputName);
+            return false;
+        } else {
+            inputLayoutName.setErrorEnabled(false);
+        }
 
-        mButtonView.setVisibility(View.VISIBLE);
-        mButtonView.setAlpha(0f);
+        return true;
+    }
 
-        mButtonView.animate()
-                .alpha(1f)
-                .setDuration(mShortAnimationDuration)
-                .setListener(null);
+    // Validating email
+    private boolean validateEmail() {
+        String email = inputEmail.getText().toString().trim();
 
-        mFieldView.animate()
-                .alpha(0f)
-                .setDuration(mShortAnimationDuration)
-                .setListener(new AnimatorListenerAdapter() {
-                    @Override
-                    public void onAnimationEnd(Animator animation) {
-                        mFieldView.setVisibility(View.GONE);
-                    }
-                });
-    }*/
+        if (email.isEmpty() || !isValidEmail(email)) {
+            inputLayoutEmail.setError(getString(R.string.err_msg_email));
+            requestFocus(inputEmail);
+            return false;
+        } else {
+            inputLayoutEmail.setErrorEnabled(false);
+        }
+
+        return true;
+    }
+
+    private static boolean isValidEmail(String email) {
+        return !TextUtils.isEmpty(email) && android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches();
+    }
+
+    private class MyTextWatcher implements TextWatcher {
+
+        private View view;
+        private MyTextWatcher(View view){
+            this.view = view;
+        }
+        @Override
+        public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+        }
+
+        @Override
+        public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+        }
+
+        @Override
+        public void afterTextChanged(Editable s) {
+            switch (view.getId()) {
+                case R.id.input_name:
+                    validateName();
+                    break;
+                case R.id.input_email:
+                    validateEmail();
+                    break;
+            }
+        }
+    }
 }

@@ -3,7 +3,7 @@ package com.harrykristi.hangapp.model;
 import java.io.Serializable;
 
 public class ChatRoom implements Serializable {
-    String id, name, lastMessage, timestamp;
+    String id, name, lastMessage, timestamp, photoUrl;
     int unreadCount;
 
     public ChatRoom() {
@@ -55,5 +55,17 @@ public class ChatRoom implements Serializable {
 
     public void setTimestamp(String timestamp) {
         this.timestamp = timestamp;
+    }
+
+    public void clearUnread() {
+        unreadCount = 0;
+    }
+
+    public String getPhotoUrl() {
+        return photoUrl;
+    }
+
+    public void setPhotoUrl(String photoUrl) {
+        this.photoUrl = photoUrl;
     }
 }
