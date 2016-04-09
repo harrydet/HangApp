@@ -1,39 +1,28 @@
 package com.harrykristi.hangapp.helpers;
 
-import android.app.Activity;
-import android.app.Application;
-import android.content.ContentResolver;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.database.Cursor;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Environment;
 import android.provider.MediaStore;
 import android.support.v7.app.AlertDialog;
 import android.util.Log;
-import android.view.View;
 import android.widget.Toast;
 
 import com.harrykristi.hangapp.ProfileFragment;
 import com.harrykristi.hangapp.events.GeneralInfoEvent;
 import com.squareup.otto.Bus;
 
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
-import java.net.URI;
-import java.util.Date;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpPost;
-import org.apache.http.entity.mime.content.ByteArrayBody;
 import org.apache.http.entity.mime.content.FileBody;
 import org.apache.http.entity.mime.content.StringBody;
 import org.apache.http.impl.client.DefaultHttpClient;
@@ -45,16 +34,16 @@ public class UploadFileToServer extends AsyncTask<Void, Integer, String> {
     private boolean isGallery;
 
     private String filePath = null;
-    private String objectId = null;
+    private String user_id = null;
     private long totalSize = 0;
     private Context context;
 
     private Bus mBus;
 
-    public UploadFileToServer(Context context, Uri filePath, String objectId, boolean isGallery) {
+    public UploadFileToServer(Context context, Uri filePath, String user_id, boolean isGallery) {
         this.filePath = filePath.getPath();
         this.filePathURI = filePath;
-        this.objectId = objectId;
+        this.user_id = user_id;
         this.context = context;
         this.isGallery = isGallery;
 
@@ -134,7 +123,7 @@ public class UploadFileToServer extends AsyncTask<Void, Integer, String> {
 
             entity.addPart("email", new StringBody("abc@gmail.com"));
 
-            entity.addPart("object_id", new StringBody(objectId));
+            entity.addPart("user_id", new StringBody(user_id));
 
             totalSize = entity.getContentLength();
             httppost.setEntity(entity);

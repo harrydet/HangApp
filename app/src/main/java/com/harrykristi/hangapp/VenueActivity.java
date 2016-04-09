@@ -194,7 +194,7 @@ public class VenueActivity extends AppCompatActivity implements View.OnClickList
     public void onClick(View v) {
         switch (v.getId()){
             case R.id.fab:
-                mBus.post(new StartUserSearchingEvent(ParseUser.getCurrentUser().getObjectId(), venueId));
+                mBus.post(new StartUserSearchingEvent(RootApplication.getmInstance().getPrefManager().getUser().getId(), venueId));
                 break;
         }
     }

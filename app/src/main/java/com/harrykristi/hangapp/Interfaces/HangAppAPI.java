@@ -32,7 +32,7 @@ public interface HangAppAPI {
 
     @FormUrlEncoded
     @POST("/startSearching")
-    public void startSearching(@Field("object_id") String object_id,
+    public void startSearching(@Field("user_id") String user_id,
                                @Field("venue_id") String venue_id,
                                Callback<ResponseUserSearching> callback);
 

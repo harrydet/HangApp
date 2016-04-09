@@ -114,7 +114,7 @@ public class AuthenticatedActivity extends AppCompatActivity
                     // GCM successfully registered, subscribe to global topic for notifications
                     String token = intent.getStringExtra("token");
 
-                    Toast.makeText(getApplicationContext(), "GCM Token: " + token, Toast.LENGTH_LONG).show();
+                    //Toast.makeText(getApplicationContext(), "GCM Token: " + token, Toast.LENGTH_LONG).show();
 
                 } else if (intent.getAction().equals(Config.SENT_TOKEN_TO_SERVER)) {
                     // GCM registration id is stored in server

@@ -164,7 +164,7 @@ public class ProfileFragment extends Fragment {
         SharedPreferences myPrefs = mActivity.getSharedPreferences("myPrefs", Context.MODE_PRIVATE);
         String url = myPrefs.getString("profile_picture_url","");
         if(url.equals("")){
-            getBus().post(new GetUserPictureEvent(ParseUser.getCurrentUser().getObjectId()));
+            getBus().post(new GetUserPictureEvent(RootApplication.getmInstance().getPrefManager().getUser().getId()));
         } else {
             Picasso.with(getContext()).load(url).placeholder(R.drawable.default_profile_icon).noFade().into(mProfilePicture);
         }
@@ -412,7 +412,7 @@ public class ProfileFragment extends Fragment {
     }
 
     private void launchUploadProcess(boolean isCamera) {
-        new UploadFileToServer(getContext(), fileUri, ParseUser.getCurrentUser().getObjectId(), !isCamera).execute();
+        new UploadFileToServer(getContext(), fileUri, RootApplication.getmInstance().getPrefManager().getUser().getId(), !isCamera).execute();
         mProfilePicture.setAlpha(0.5f);
     }
 
