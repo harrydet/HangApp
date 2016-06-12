@@ -53,8 +53,8 @@ public class NotificationUtils {
 
     public void showNotificationMessage(final String title, final String message, final String timeStamp, Intent intent, String imageUrl){
         // Check for empty push
-        if(TextUtils.isEmpty(message))
-            return;
+        //if(TextUtils.isEmpty(message))
+        //    return;
 
         // Notification icon
         final int icon = R.drawable.ic_fob_drink;

@@ -21,7 +21,7 @@
             android:layout_height="60dp"
             android:layout_gravity="left"
             android:layout_weight="0.2"
-            app:civ_border_width="0.5dp"
+            app:civ_border_width="0.1dp"
             app:civ_border_color="@color/coolGrey"/>
 
     </LinearLayout>

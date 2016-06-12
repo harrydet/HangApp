@@ -22,6 +22,7 @@ public class Config {
     // type of push messages
     public static final int PUSH_TYPE_CHATROOM = 1;
     public static final int PUSH_TYPE_USER = 2;
+    public static final int PUSH_TYPE_MATCHMAKING = 8;
 
     // id to handle the notification in the notification try
     public static final int NOTIFICATION_ID = 100;

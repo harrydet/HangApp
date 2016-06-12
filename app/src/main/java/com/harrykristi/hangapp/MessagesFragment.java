@@ -12,6 +12,7 @@ import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.text.format.DateUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -38,7 +39,11 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
+import java.util.Locale;
 
 
 public class MessagesFragment extends Fragment {
@@ -158,6 +163,8 @@ public class MessagesFragment extends Fragment {
             // just showing the message in a toast
             Message message = (Message) intent.getSerializableExtra("message");
             Toast.makeText(activity.getApplicationContext(), "New push: " + message.getMessage(), Toast.LENGTH_LONG).show();
+        } else if (type == Config.PUSH_TYPE_MATCHMAKING) {
+            Toast.makeText(activity.getApplicationContext(), intent.getStringExtra("chat_room_name"), Toast.LENGTH_SHORT).show();
         }
 
 
@@ -184,8 +191,10 @@ public class MessagesFragment extends Fragment {
      * fetching the chat rooms by making http call
      */
     private void fetchChatRooms() {
+        String endPoint = EndPoints.CHAT_ROOM_USER.replace("_ID_", RootApplication.getmInstance().getPrefManager().getUser().getId());
+
         StringRequest strReq = new StringRequest(Request.Method.GET,
-                EndPoints.CHAT_ROOMS, new Response.Listener<String>() {
+                endPoint, new Response.Listener<String>() {
 
             @Override
             public void onResponse(String response) {

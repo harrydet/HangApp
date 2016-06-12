@@ -3,7 +3,6 @@ package com.harrykristi.hangapp.gcm;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.provider.DocumentsContract;
 import android.support.v4.content.LocalBroadcastManager;
 import android.text.TextUtils;
 import android.util.Log;
@@ -12,7 +11,6 @@ import android.widget.Toast;
 import com.google.android.gms.gcm.GcmListenerService;
 import com.harrykristi.hangapp.AuthenticatedActivity;
 import com.harrykristi.hangapp.ChatRoomActivity;
-import com.harrykristi.hangapp.HelperActivity;
 import com.harrykristi.hangapp.RootApplication;
 import com.harrykristi.hangapp.helpers.Config;
 import com.harrykristi.hangapp.model.Message;
@@ -63,6 +61,9 @@ public class GcmPushReceiver extends GcmListenerService {
                 // push notification is specific to user
                 processUserMessage(title, isBackground, data);
                 break;
+            case Config.PUSH_TYPE_MATCHMAKING:
+                // push notification is matchmaking notif
+                processMatchmakingPush(title, isBackground, data);
         }
     }
 
@@ -192,6 +193,43 @@ public class GcmPushReceiver extends GcmListenerService {
         } else {
             // the push notification is silent, may be other operations needed
             // like inserting it in to SQLite
+        }
+    }
+
+    private void processMatchmakingPush(String title, Boolean isBackground, String data) {
+        if (!isBackground){
+            try {
+                JSONObject dataObj = new JSONObject(data);
+
+                String topic = dataObj.getString("topic");
+                JSONObject chatRoomObj = dataObj.getJSONObject("chat_room");
+
+                Intent intent = new Intent(this, GcmIntentService.class);
+                intent.putExtra(GcmIntentService.KEY, GcmIntentService.SUBSCRIBE);
+                intent.putExtra(GcmIntentService.TOPIC, topic);
+                startService(intent);
+
+                if (!NotificationUtils.isAppInBackground(getApplicationContext())) {
+                    // app is in foreground, broadcast the push message
+                    Intent pushNotification = new Intent(Config.PUSH_NOTIFICATION);
+                    pushNotification.putExtra("type", Config.PUSH_TYPE_MATCHMAKING);
+                    pushNotification.putExtra("chat_room_name", chatRoomObj.getString("name"));
+                    LocalBroadcastManager.getInstance(this).sendBroadcast(pushNotification);
+                } else {
+                    Intent chatRoomIntent = new Intent(this, ChatRoomActivity.class);
+                    chatRoomIntent.putExtra("chat_room_id", chatRoomObj.getString("cr_chat_room_id"));
+                    chatRoomIntent.putExtra("name", chatRoomObj.getString("name"));
+
+                    showNotificationMessage(this, title, "", "now", chatRoomIntent);
+
+                }
+
+            } catch (JSONException ex) {
+                Log.e(TAG, "json parsing error: " + ex.getMessage());
+                Toast.makeText(getApplicationContext(), "Json parse error: " + ex.getMessage(), Toast.LENGTH_LONG).show();
+            }
+        } else {
+            // background notif
         }
     }
 

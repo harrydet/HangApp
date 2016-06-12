@@ -2,12 +2,14 @@ package com.harrykristi.hangapp.Adapters;
 
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
+import android.text.format.DateUtils;
 import android.view.GestureDetector;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.harrykristi.hangapp.R;
 import com.harrykristi.hangapp.model.ChatRoom;
@@ -18,6 +20,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Locale;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
@@ -80,24 +83,17 @@ public class ChatRoomsAdapter extends RecyclerView.Adapter<ChatRoomsAdapter.View
         return chatRoomArrayList.size();
     }
 
-    public static String getTimeStamp(String dateStr) {
-        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        String timestamp = "";
-
-        today = today.length() < 2 ? "0" + today : today;
-
+    private String getTimeStamp(String created_at) {
         try {
-            Date date = format.parse(dateStr);
-            SimpleDateFormat todayFormat = new SimpleDateFormat("dd");
-            String dateToday = todayFormat.format(date);
-            format = dateToday.equals(today) ? new SimpleDateFormat("hh:mm a") : new SimpleDateFormat("dd LLL, hh:mm a");
-            String date1 = format.format(date);
-            timestamp = date1.toString();
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }
+            Date date = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.ENGLISH).parse(created_at);
+            long milliseconds = date.getTime();
+            String formattedDate = (String) DateUtils.getRelativeDateTimeString(mContext, milliseconds, DateUtils.DAY_IN_MILLIS, DateUtils.WEEK_IN_MILLIS, 0);
 
-        return timestamp;
+            return formattedDate;
+
+        } catch (Exception e) {
+            return created_at;
+        }
     }
 
     public interface ClickListener {

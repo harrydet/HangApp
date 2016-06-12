@@ -125,7 +125,7 @@ public class AuthenticatedActivity extends AppCompatActivity
                     if(currentFragment instanceof MessagesFragment) {
                         MessagesFragment messagesFragment = (MessagesFragment) currentFragment;
                         messagesFragment.handlePushNotification(intent);
-                        Toast.makeText(getApplicationContext(), "Push notification received", Toast.LENGTH_LONG).show();
+                        //Toast.makeText(getApplicationContext(), "Push notification received", Toast.LENGTH_LONG).show();
                     }
                 }
             }
